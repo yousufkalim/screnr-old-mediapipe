@@ -1,5 +1,7 @@
 /* Importing all CSS files */
-@import url("./Header.css");
+@import url("./home/index.css");
+@import url("./Doctor/index.css");
+@import url("./components/index.css");
 
 /* Defaults */
 * {
