@@ -75,6 +75,7 @@ export default function Survey() {
   const [answerTypeSelect, setAnswerTypeSelect] = React.useState("");
 
   useEffect(() => {
+    setSurveyForm([]);
     getPatients();
   }, []);
 
@@ -92,7 +93,6 @@ export default function Survey() {
     setShowAddQuestion(true);
   };
   const handleAnswerTypeSelect = (event) => {
-    console.log("asdasd", event.target);
     setAnswerTypeSelect(event.target.value);
   };
 
