@@ -290,8 +290,8 @@ export const HolisticComponent = () => {
         onFrame: async () => {
           await holistic.send({ image: webcamRef.current.video });
         },
-        width: "50%",
-        height: "50%",
+        width: 480,
+        height: 320,
       });
       camera.start();
     }
@@ -310,8 +310,8 @@ export const HolisticComponent = () => {
             right: 0,
             textAlign: "center",
             zindex: 9,
-            width: "50%",
-            height: "50%",
+            width: 480,
+            height: 320,
           }}
         />
         <canvas
@@ -326,8 +326,8 @@ export const HolisticComponent = () => {
             right: 0,
             textAlign: "center",
             zindex: 9,
-            width: "50%",
-            height: "50%",
+            width: 480,
+            height: 320,
           }}
         ></canvas>
       </div>
