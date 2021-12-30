@@ -4,13 +4,16 @@ import * as HolistiC from "@mediapipe/holistic";
 import * as cam from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import Webcam from "react-webcam";
+import html2canvas from "html2canvas";
+
+var captured = false;
+var camera = null;
 
 export const HolisticComponent = () => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   let activeEffect = "mask";
 
-  var camera = null;
   function onResults(results) {
     // const video = webcamRef.current.video;
     const videoWidth = webcamRef.current.video.videoWidth;
@@ -25,6 +28,7 @@ export const HolisticComponent = () => {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
+    // CREATING A MASK
     if (results.segmentationMask) {
       canvasCtx.drawImage(
         results.segmentationMask,
@@ -66,10 +70,11 @@ export const HolisticComponent = () => {
         canvasElement.height
       );
     }
+    canvasCtx.lineWidth = 0.5;
 
     // Connect elbows to hands. Do this first so that the other graphics will draw
     // on top of these marks.
-    canvasCtx.lineWidth = 0.5;
+
     // if (results.poseLandmarks) {
     //   if (results.rightHandLandmarks) {
     //     canvasCtx.strokeStyle = 'white';
@@ -87,43 +92,94 @@ export const HolisticComponent = () => {
     //   }
     // }
 
-    // Pose...
-    console.log("results", results);
-    // console.log("canvasCtx", canvasCtx);
+    // CHECK IF ITS THE POSE
+
     if (results.poseLandmarks) {
       drawConnectors(
         canvasCtx,
         results.poseLandmarks,
         HolistiC.POSE_CONNECTIONS,
-        { color: "white" }
+        { color: "white", lineWidth: 0.5 }
       );
-      drawLandmarks(
-        canvasCtx,
-        Object.values(HolistiC.POSE_LANDMARKS_LEFT).map(
-          (index) => results.poseLandmarks[index]
-        ),
-        {
-          visibilityMin: 0.65,
-          color: "white",
-          fillColor: "rgb(255,138,0)",
-          lineWidth: 0.5,
-        }
-      );
-      drawLandmarks(
-        canvasCtx,
-        Object.values(HolistiC.POSE_LANDMARKS_RIGHT).map(
-          (index) => results.poseLandmarks[index]
-        ),
-        {
-          visibilityMin: 0.65,
-          color: "white",
-          fillColor: "rgb(0,217,231)",
-          lineWidth: 0.5,
-        }
-      );
+
+      // FACE INLINE POSE POSITIONS (currently commented due to mask)
+      // drawLandmarks(
+      //   canvasCtx,
+      //   Object.values(HolistiC.POSE_LANDMARKS_LEFT).map(
+      //     (index) => results.poseLandmarks[index]
+      //   ),
+      //   {
+      //     visibilityMin: 0.65,
+      //     color: "white",
+      //     fillColor: "rgb(255,138,0)",
+      //     lineWidth: 0.5,
+      //   }
+      // );
+      // drawLandmarks(
+      //   canvasCtx,
+      //   Object.values(HolistiC.POSE_LANDMARKS_RIGHT).map(
+      //     (index) => results.poseLandmarks[index]
+      //   ),
+      //   {
+      //     visibilityMin: 0.65,
+      //     color: "white",
+      //     fillColor: "rgb(0,217,231)",
+      //     lineWidth: 0.5,
+      //   }
+      // );
     }
 
+    // CHECK IF ITS THE RIGHT HAND
     if (results.rightHandLandmarks) {
+      console.log(
+        "test",
+        // results.rightHandLandmarks[6].y.toFixed(2),
+        // results.rightHandLandmarks[16].y.toFixed(2),
+        // results.rightHandLandmarks[10].y.toFixed(2),
+        // results.rightHandLandmarks[20].y.toFixed(2),
+        results.rightHandLandmarks[6].y.toFixed(2) <
+          results.rightHandLandmarks[16].y.toFixed(2),
+        results.rightHandLandmarks[10].y.toFixed(2) <
+          results.rightHandLandmarks[20].y.toFixed(2),
+        results.rightHandLandmarks[12].y.toFixed(2) <
+          results.rightHandLandmarks[8].y.toFixed(2),
+        results.rightHandLandmarks[8].y.toFixed(2) <
+          results.rightHandLandmarks[7].y.toFixed(2),
+        results.rightHandLandmarks[12].y.toFixed(2) <
+          results.rightHandLandmarks[11].y.toFixed(2),
+        results.rightHandLandmarks[4].y.toFixed(2) <
+          results.rightHandLandmarks[16].y.toFixed(2),
+        results.rightHandLandmarks[4].y.toFixed(2) <
+          results.rightHandLandmarks[20].y.toFixed(2)
+      );
+
+      if (
+        results.rightHandLandmarks[5].y.toFixed(2) <
+          results.rightHandLandmarks[16].y.toFixed(2) &&
+        results.rightHandLandmarks[9].y.toFixed(2) <
+          results.rightHandLandmarks[20].y.toFixed(2) &&
+        results.rightHandLandmarks[12].y.toFixed(2) <
+          results.rightHandLandmarks[8].y.toFixed(2) &&
+        results.rightHandLandmarks[8].y.toFixed(2) <
+          results.rightHandLandmarks[7].y.toFixed(2) &&
+        results.rightHandLandmarks[12].y.toFixed(2) <
+          results.rightHandLandmarks[11].y.toFixed(2) &&
+        results.rightHandLandmarks[4].y.toFixed(2) <
+          results.rightHandLandmarks[16].y.toFixed(2) &&
+        results.rightHandLandmarks[4].y.toFixed(2) <
+          results.rightHandLandmarks[20].y.toFixed(2)
+      ) {
+        // GET SCREENSHOT OF CURRENT CANVAS
+        if (!captured) {
+          let domElement = document.getElementById("webCan");
+          html2canvas(domElement).then((canvas) => {
+            document.getElementById("holistic").appendChild(canvas);
+          });
+          captured = true;
+        }
+        // console.log("true");
+      }
+
       // Hands...
       drawConnectors(
         canvasCtx,
@@ -137,6 +193,8 @@ export const HolisticComponent = () => {
         lineWidth: 0.5,
       });
     }
+
+    // CHECK IF ITS THE LEFT HAND
     if (results.leftHandLandmarks) {
       drawConnectors(
         canvasCtx,
@@ -150,52 +208,59 @@ export const HolisticComponent = () => {
         lineWidth: 0.5,
       });
     }
+
+    // CHECK IF ITS THE FACE
     if (results.faceLandmarks) {
       // Face...
       drawConnectors(
         canvasCtx,
         results.faceLandmarks,
         HolistiC.FACEMESH_TESSELATION,
-        { color: "#C0C0C070", lineWidth: 0.4 }
+        { color: "white", lineWidth: 0.4 }
       );
       drawConnectors(
         canvasCtx,
         results.faceLandmarks,
         HolistiC.FACEMESH_RIGHT_EYE,
-        { color: "rgb(0,217,231)", lineWidth: 0.4 }
+        { color: "cyan", lineWidth: 0.4 }
       );
       drawConnectors(
         canvasCtx,
         results.faceLandmarks,
         HolistiC.FACEMESH_RIGHT_EYEBROW,
-        { color: "rgb(0,217,231)", lineWidth: 0.4 }
+        { color: "cyan", lineWidth: 0.4 }
       );
       drawConnectors(
         canvasCtx,
         results.faceLandmarks,
         HolistiC.FACEMESH_LEFT_EYE,
-        { color: "rgb(255,138,0)", lineWidth: 0.4 }
+        { color: "cyan", lineWidth: 0.4 }
       );
       drawConnectors(
         canvasCtx,
         results.faceLandmarks,
         HolistiC.FACEMESH_LEFT_EYEBROW,
-        { color: "rgb(255,138,0)", lineWidth: 0.4 }
+        { color: "cyan", lineWidth: 0.4 }
       );
       drawConnectors(
         canvasCtx,
         results.faceLandmarks,
         HolistiC.FACEMESH_FACE_OVAL,
-        { color: "#E0E0E0", lineWidth: 0.4 }
+        { color: "cyan", lineWidth: 0.4 }
       );
       drawConnectors(canvasCtx, results.faceLandmarks, HolistiC.FACEMESH_LIPS, {
-        color: "#E0E0E0",
+        color: "cyan",
         lineWidth: 0.4,
       });
     }
 
     canvasCtx.restore();
   }
+  const handleReset = () => {
+    var resetDiv = document.getElementById("holistic");
+    resetDiv.innerHTML = "";
+    captured = false;
+  };
 
   useEffect(() => {
     const holistic = new Holistic({
@@ -212,6 +277,7 @@ export const HolisticComponent = () => {
       smoothSegmentation: true,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
+      // staticImageMode: true,
     });
 
     holistic.onResults(onResults);
@@ -224,15 +290,16 @@ export const HolisticComponent = () => {
         onFrame: async () => {
           await holistic.send({ image: webcamRef.current.video });
         },
-        width: 640,
-        height: 480,
+        width: "50%",
+        height: "50%",
       });
       camera.start();
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <center>
-      <div className="App">
+      <div className="webCan">
         <Webcam
           ref={webcamRef}
           style={{
@@ -243,11 +310,12 @@ export const HolisticComponent = () => {
             right: 0,
             textAlign: "center",
             zindex: 9,
-            width: 640,
-            height: 480,
+            width: "50%",
+            height: "50%",
           }}
-        />{" "}
+        />
         <canvas
+          id="webCan"
           ref={canvasRef}
           className="output_canvas"
           style={{
@@ -258,10 +326,26 @@ export const HolisticComponent = () => {
             right: 0,
             textAlign: "center",
             zindex: 9,
-            width: 640,
-            height: 480,
+            width: "50%",
+            height: "50%",
           }}
         ></canvas>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "0",
+        }}
+      >
+        <div id="holistic"></div>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "0",
+        }}
+      >
+        <button onClick={handleReset}>Reset</button>
       </div>
     </center>
   );
