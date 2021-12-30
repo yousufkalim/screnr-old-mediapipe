@@ -52,7 +52,13 @@ export default function SignInSide() {
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
     // eslint-disable-next-line no-console
+
+    if (data.get("email") === "") {
+      toast.error("email not found");
+      return;
+    }
 
     await Api("post", "/auth/login", {
       email: data.get("email"),
