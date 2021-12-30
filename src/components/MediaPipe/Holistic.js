@@ -132,7 +132,6 @@ export const HolisticComponent = () => {
     // CHECK IF ITS THE RIGHT HAND
     if (results.rightHandLandmarks) {
       console.log(
-        "test",
         // results.rightHandLandmarks[6].y.toFixed(2),
         // results.rightHandLandmarks[16].y.toFixed(2),
         // results.rightHandLandmarks[10].y.toFixed(2),
@@ -196,6 +195,27 @@ export const HolisticComponent = () => {
 
     // CHECK IF ITS THE LEFT HAND
     if (results.leftHandLandmarks) {
+      if (
+        results.leftHandLandmarks[5].y.toFixed(2) <
+          results.leftHandLandmarks[16].y.toFixed(2) &&
+        results.leftHandLandmarks[9].y.toFixed(2) <
+          results.leftHandLandmarks[20].y.toFixed(2) &&
+        results.leftHandLandmarks[12].y.toFixed(2) <
+          results.leftHandLandmarks[8].y.toFixed(2) &&
+        results.leftHandLandmarks[8].y.toFixed(2) <
+          results.leftHandLandmarks[7].y.toFixed(2) &&
+        results.leftHandLandmarks[12].y.toFixed(2) <
+          results.leftHandLandmarks[11].y.toFixed(2) &&
+        results.leftHandLandmarks[4].y.toFixed(2) <
+          results.leftHandLandmarks[16].y.toFixed(2) &&
+        results.leftHandLandmarks[4].y.toFixed(2) <
+          results.leftHandLandmarks[20].y.toFixed(2)
+      ) {
+        // RSEST SCREENSHOT OF CURRENT CANVAS
+        handleReset();
+        // console.log("true");
+      }
+
       drawConnectors(
         canvasCtx,
         results.leftHandLandmarks,
@@ -338,14 +358,6 @@ export const HolisticComponent = () => {
         }}
       >
         <div id="holistic"></div>
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          bottom: "0",
-        }}
-      >
-        <button onClick={handleReset}>Reset</button>
       </div>
     </center>
   );
