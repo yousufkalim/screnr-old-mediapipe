@@ -14,11 +14,24 @@ var showHandsLandmarks = false;
 var showFaceLandmarks = false;
 
 export const HolisticComponent = () => {
+  const [fps, setFps] = useState(0);
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   let activeEffect = "mask";
+  let frames = [];
+
+  // Calculating fps after every one second
+  useEffect(() => {
+    setInterval(() => {
+      setFps(frames.length);
+      frames = [];
+    }, 1000);
+  }, []);
 
   function onResults(results) {
+    // FPS --> Pushing a string into frames array in order to get it's length after one second
+    frames.push("frame");
+
     // const video = webcamRef.current.video;
     const videoWidth = webcamRef.current.video.videoWidth;
     const videoHeight = webcamRef.current.video.videoHeight;
@@ -407,6 +420,7 @@ export const HolisticComponent = () => {
           Show Face
         </Button>
       </div>
+
       <div
         style={{
           position: "absolute",
@@ -415,6 +429,7 @@ export const HolisticComponent = () => {
       >
         <div id="holistic"></div>
       </div>
+      <h1 style={{ textAlign: "right" }}>{fps} FPS</h1>
     </center>
   );
 };
