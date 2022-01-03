@@ -28,6 +28,13 @@ export const HolisticComponent = () => {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
+    // const image = new Image();
+    // image.src =
+    //   "https://www.barbarianmeetscoding.com/images/i-know-javascript.jpg";
+    // image.onload = () => {
+    //   canvasCtx.drawImage(image, 0, 0);
+    // };
+
     // CREATING A MASK
     if (results.segmentationMask) {
       canvasCtx.drawImage(
@@ -95,63 +102,44 @@ export const HolisticComponent = () => {
     // CHECK IF ITS THE POSE
 
     if (results.poseLandmarks) {
+      // console.log("pose", results.poseLandmarks);
+
       drawConnectors(
         canvasCtx,
         results.poseLandmarks,
         HolistiC.POSE_CONNECTIONS,
-        { color: "white", lineWidth: 0.5 }
+        { color: "white", lineWidth: 1 }
       );
 
-      // FACE INLINE POSE POSITIONS (currently commented due to mask)
-      // drawLandmarks(
-      //   canvasCtx,
-      //   Object.values(HolistiC.POSE_LANDMARKS_LEFT).map(
-      //     (index) => results.poseLandmarks[index]
-      //   ),
-      //   {
-      //     visibilityMin: 0.65,
-      //     color: "white",
-      //     fillColor: "rgb(255,138,0)",
-      //     lineWidth: 0.5,
-      //   }
-      // );
-      // drawLandmarks(
-      //   canvasCtx,
-      //   Object.values(HolistiC.POSE_LANDMARKS_RIGHT).map(
-      //     (index) => results.poseLandmarks[index]
-      //   ),
-      //   {
-      //     visibilityMin: 0.65,
-      //     color: "white",
-      //     fillColor: "rgb(0,217,231)",
-      //     lineWidth: 0.5,
-      //   }
-      // );
+      // FACE INLINE POSE POSITIONS
+      drawLandmarks(
+        canvasCtx,
+        Object.values(HolistiC.POSE_LANDMARKS_LEFT).map(
+          (index) => results.poseLandmarks[index]
+        ),
+        {
+          visibilityMin: 0.65,
+          color: "transparent",
+          fillColor: "transparent",
+          lineWidth: 1,
+        }
+      );
+      drawLandmarks(
+        canvasCtx,
+        Object.values(HolistiC.POSE_LANDMARKS_RIGHT).map(
+          (index) => results.poseLandmarks[index]
+        ),
+        {
+          visibilityMin: 0.65,
+          color: "transparent",
+          fillColor: "transparent",
+          lineWidth: 1,
+        }
+      );
     }
 
     // CHECK IF ITS THE RIGHT HAND
     if (results.rightHandLandmarks) {
-      console.log(
-        // results.rightHandLandmarks[6].y.toFixed(2),
-        // results.rightHandLandmarks[16].y.toFixed(2),
-        // results.rightHandLandmarks[10].y.toFixed(2),
-        // results.rightHandLandmarks[20].y.toFixed(2),
-        results.rightHandLandmarks[6].y.toFixed(2) <
-          results.rightHandLandmarks[16].y.toFixed(2),
-        results.rightHandLandmarks[10].y.toFixed(2) <
-          results.rightHandLandmarks[20].y.toFixed(2),
-        results.rightHandLandmarks[12].y.toFixed(2) <
-          results.rightHandLandmarks[8].y.toFixed(2),
-        results.rightHandLandmarks[8].y.toFixed(2) <
-          results.rightHandLandmarks[7].y.toFixed(2),
-        results.rightHandLandmarks[12].y.toFixed(2) <
-          results.rightHandLandmarks[11].y.toFixed(2),
-        results.rightHandLandmarks[4].y.toFixed(2) <
-          results.rightHandLandmarks[16].y.toFixed(2),
-        results.rightHandLandmarks[4].y.toFixed(2) <
-          results.rightHandLandmarks[20].y.toFixed(2)
-      );
-
       if (
         results.rightHandLandmarks[5].y.toFixed(2) <
           results.rightHandLandmarks[16].y.toFixed(2) &&
@@ -176,21 +164,19 @@ export const HolisticComponent = () => {
           });
           captured = true;
         }
-        // console.log("true");
       }
 
-      // Hands...
-      drawConnectors(
-        canvasCtx,
-        results.rightHandLandmarks,
-        HolistiC.HAND_CONNECTIONS,
-        { color: "white", lineWidth: 0.5 }
-      );
-      drawLandmarks(canvasCtx, results.rightHandLandmarks, {
-        color: "white",
-        fillColor: "rgb(0,217,231)",
-        lineWidth: 0.5,
-      });
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.rightHandLandmarks,
+      //   HolistiC.HAND_CONNECTIONS,
+      //   { color: "white", lineWidth: 0.5 }
+      // );
+      // drawLandmarks(canvasCtx, results.rightHandLandmarks, {
+      //   color: "white",
+      //   fillColor: "rgb(0,217,231)",
+      //   lineWidth: 0.5,
+      // });
     }
 
     // CHECK IF ITS THE LEFT HAND
@@ -213,65 +199,63 @@ export const HolisticComponent = () => {
       ) {
         // RSEST SCREENSHOT OF CURRENT CANVAS
         handleReset();
-        // console.log("true");
       }
 
-      drawConnectors(
-        canvasCtx,
-        results.leftHandLandmarks,
-        HolistiC.HAND_CONNECTIONS,
-        { color: "white", lineWidth: 0.5 }
-      );
-      drawLandmarks(canvasCtx, results.leftHandLandmarks, {
-        color: "white",
-        fillColor: "rgb(255,138,0)",
-        lineWidth: 0.5,
-      });
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.leftHandLandmarks,
+      //   HolistiC.HAND_CONNECTIONS,
+      //   { color: "white", lineWidth: 0.5 }
+      // );
+      // drawLandmarks(canvasCtx, results.leftHandLandmarks, {
+      //   color: "white",
+      //   fillColor: "rgb(255,138,0)",
+      //   lineWidth: 0.5,
+      // });
     }
 
     // CHECK IF ITS THE FACE
     if (results.faceLandmarks) {
-      // Face...
-      drawConnectors(
-        canvasCtx,
-        results.faceLandmarks,
-        HolistiC.FACEMESH_TESSELATION,
-        { color: "white", lineWidth: 0.4 }
-      );
-      drawConnectors(
-        canvasCtx,
-        results.faceLandmarks,
-        HolistiC.FACEMESH_RIGHT_EYE,
-        { color: "cyan", lineWidth: 0.4 }
-      );
-      drawConnectors(
-        canvasCtx,
-        results.faceLandmarks,
-        HolistiC.FACEMESH_RIGHT_EYEBROW,
-        { color: "cyan", lineWidth: 0.4 }
-      );
-      drawConnectors(
-        canvasCtx,
-        results.faceLandmarks,
-        HolistiC.FACEMESH_LEFT_EYE,
-        { color: "cyan", lineWidth: 0.4 }
-      );
-      drawConnectors(
-        canvasCtx,
-        results.faceLandmarks,
-        HolistiC.FACEMESH_LEFT_EYEBROW,
-        { color: "cyan", lineWidth: 0.4 }
-      );
-      drawConnectors(
-        canvasCtx,
-        results.faceLandmarks,
-        HolistiC.FACEMESH_FACE_OVAL,
-        { color: "cyan", lineWidth: 0.4 }
-      );
-      drawConnectors(canvasCtx, results.faceLandmarks, HolistiC.FACEMESH_LIPS, {
-        color: "cyan",
-        lineWidth: 0.4,
-      });
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.faceLandmarks,
+      //   HolistiC.FACEMESH_TESSELATION,
+      //   { color: "transparent", lineWidth: 0.4 }
+      // );
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.faceLandmarks,
+      //   HolistiC.FACEMESH_RIGHT_EYE,
+      //   { color: "transparent", lineWidth: 0.4 }
+      // );
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.faceLandmarks,
+      //   HolistiC.FACEMESH_RIGHT_EYEBROW,
+      //   { color: "transparent", lineWidth: 0.4 }
+      // );
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.faceLandmarks,
+      //   HolistiC.FACEMESH_LEFT_EYE,
+      //   { color: "transparent", lineWidth: 0.4 }
+      // );
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.faceLandmarks,
+      //   HolistiC.FACEMESH_LEFT_EYEBROW,
+      //   { color: "transparent", lineWidth: 0.4 }
+      // );
+      // drawConnectors(
+      //   canvasCtx,
+      //   results.faceLandmarks,
+      //   HolistiC.FACEMESH_FACE_OVAL,
+      //   { color: "white", lineWidth: 0.4 }
+      // );
+      // drawConnectors(canvasCtx, results.faceLandmarks, HolistiC.FACEMESH_LIPS, {
+      //   color: "transparent",
+      //   lineWidth: 0.4,
+      // });
     }
 
     canvasCtx.restore();
