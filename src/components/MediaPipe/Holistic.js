@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import Webcam from "react-webcam";
-import html2canvas from "html2canvas";
+// import html2canvas from "html2canvas";
 import Button from "@mui/material/Button";
 import { Holistic } from "@mediapipe/holistic";
 import * as cam from "@mediapipe/camera_utils";
@@ -179,13 +179,13 @@ export const HolisticComponent = () => {
           results.rightHandLandmarks[20].y.toFixed(2)
       ) {
         // GET SCREENSHOT OF CURRENT CANVAS
-        if (!captured) {
-          let domElement = document.getElementById("webCan");
-          html2canvas(domElement).then((canvas) => {
-            document.getElementById("holistic").appendChild(canvas);
-          });
-          captured = true;
-        }
+        // if (!captured) {
+        //   let domElement = document.getElementById("webCan");
+        //   html2canvas(domElement).then((canvas) => {
+        //     document.getElementById("holistic").appendChild(canvas);
+        //   });
+        //   captured = true;
+        // }
       }
       if (showHandsLandmarks) {
         drawConnectors(
@@ -369,7 +369,7 @@ export const HolisticComponent = () => {
         <Button
           style={{
             position: "absolute",
-            left: 720,
+            right: 30,
             top: 170,
             zindex: 10,
             width: 130,
@@ -383,7 +383,7 @@ export const HolisticComponent = () => {
         <Button
           style={{
             position: "absolute",
-            left: 720,
+            right: 30,
             top: 230,
             zindex: 10,
             width: 130,
@@ -396,7 +396,7 @@ export const HolisticComponent = () => {
         <Button
           style={{
             position: "absolute",
-            left: 720,
+            right: 30,
             top: 290,
             zindex: 10,
             width: 130,
