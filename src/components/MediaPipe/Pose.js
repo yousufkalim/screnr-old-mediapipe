@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import Button from "@mui/material/Button";
 import { Pose } from "@mediapipe/pose";
@@ -14,8 +14,20 @@ export const PoseComponent = () => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   let activeEffect = "mask";
+  const [fps, setFps] = useState(0);
+  let frames = [];
+
+  useEffect(() => {
+    setInterval(() => {
+      setFps(frames.length);
+      frames = [];
+    }, 1000);
+  }, []);
 
   function onResults(results) {
+    // FPS --> Pushing a string into frames array in order to get it's length after one second
+    frames.push("frame");
+
     // const video = webcamRef.current.video;
     const videoWidth = webcamRef.current.video.videoWidth;
     const videoHeight = webcamRef.current.video.videoHeight;
@@ -225,6 +237,7 @@ export const PoseComponent = () => {
           Show Pose
         </Button>
       </div>
+      <h1 style={{ textAlign: "right" }}>{fps} FPS</h1>
     </center>
   );
 };
