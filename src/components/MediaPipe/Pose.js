@@ -162,7 +162,7 @@ export const PoseComponent = () => {
     });
 
     pose.setOptions({
-      // selfieMode: true,
+      selfieMode: false,
       modelComplexity: 1,
       smoothLandmarks: true,
       enableSegmentation: false,
@@ -182,8 +182,8 @@ export const PoseComponent = () => {
         onFrame: async () => {
           await pose.send({ image: webcamRef.current.video });
         },
-        width: 480,
-        height: 320,
+        width: webcamRef.current.video.videoWidth,
+        height: webcamRef.current.video.videoHeight,
       });
       camera.start();
     }
@@ -193,6 +193,7 @@ export const PoseComponent = () => {
     <center>
       <div className="webCan">
         <Webcam
+          className="webcam_main"
           ref={webcamRef}
           style={{
             position: "absolute",
@@ -201,7 +202,7 @@ export const PoseComponent = () => {
             left: 0,
             right: 0,
             textAlign: "center",
-            zindex: 9,
+            zIndex: 9,
             width: 480,
             height: 320,
           }}
@@ -217,27 +218,23 @@ export const PoseComponent = () => {
             left: 0,
             right: 0,
             textAlign: "center",
-            zindex: 9,
+            zIndex: 9,
             width: 480,
             height: 320,
           }}
         ></canvas>
 
         <Button
-          style={{
-            position: "absolute",
-            right: 30,
-            top: 170,
-            zindex: 10,
-            width: 130,
-          }}
+          className="show_pose_btn"
           onClick={(e) => (showPoseLandmarks = !showPoseLandmarks)}
           variant="contained"
         >
           Show Pose
         </Button>
       </div>
-      <h1 style={{ textAlign: "right" }}>{fps} FPS</h1>
+      <h1 className="show_fps" style={{ textAlign: "right" }}>
+        {fps} FPS
+      </h1>
     </center>
   );
 };

@@ -1,0 +1,24 @@
+.show_pose_btn {
+  position: absolute !important;
+  right: 30px !important;
+  top: 170px !important;
+  z-index: 10px !important;
+  width: 130px !important;
+}
+
+@media only screen and (max-width: 600px) {
+  .show_pose_btn {
+    top: 420px !important;
+  }
+
+  .output_canvas {
+    width: 300px !important;
+    height: 200px !important;
+    top: 160px !important;
+  }
+  .webcam_main {
+    width: 300px !important;
+    height: 200px !important;
+    top: 160px !important;
+  }
+}
