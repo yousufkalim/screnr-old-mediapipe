@@ -15,6 +15,7 @@ export const PoseComponent = () => {
   const canvasRef = useRef(null);
   let activeEffect = "mask";
   const [fps, setFps] = useState(0);
+  const [currentWidth, setCurrentWidth] = useState(0);
   let frames = [];
 
   useEffect(() => {
@@ -24,13 +25,17 @@ export const PoseComponent = () => {
     }, 1000);
   }, []);
 
+  useEffect(() => {
+    setCurrentWidth(window.screen.width);
+  }, [window.screen.width]);
+
   function onResults(results) {
     // FPS --> Pushing a string into frames array in order to get it's length after one second
     frames.push("frame");
 
     // const video = webcamRef.current.video;
-    const videoWidth = webcamRef.current.video.videoWidth;
-    const videoHeight = webcamRef.current.video.videoHeight;
+    const videoWidth = webcamRef.current.video.width;
+    const videoHeight = webcamRef.current.video.height;
 
     // Set canvas width
     canvasRef.current.width = videoWidth;
@@ -182,8 +187,8 @@ export const PoseComponent = () => {
         onFrame: async () => {
           await pose.send({ image: webcamRef.current.video });
         },
-        width: webcamRef.current.video.videoWidth,
-        height: webcamRef.current.video.videoHeight,
+        width: webcamRef.current.video.width,
+        height: webcamRef.current.video.height,
       });
       camera.start();
     }
@@ -195,34 +200,10 @@ export const PoseComponent = () => {
         <Webcam
           className="webcam_main"
           ref={webcamRef}
-          style={{
-            position: "absolute",
-            marginLeft: "auto",
-            marginRight: "auto",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zIndex: 9,
-            width: 480,
-            height: 320,
-          }}
+          width={currentWidth < 600 ? 300 : 480}
+          height={currentWidth < 600 ? 200 : 320}
         />
-        <canvas
-          id="webCan"
-          ref={canvasRef}
-          className="output_canvas"
-          style={{
-            position: "absolute",
-            marginLeft: "auto",
-            marginRight: "auto",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zIndex: 9,
-            width: 480,
-            height: 320,
-          }}
-        ></canvas>
+        <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
 
         <Button
           className="show_pose_btn"
