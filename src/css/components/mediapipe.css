@@ -1,9 +1,13 @@
 .show_pose_btn {
   position: absolute !important;
-  right: 30px !important;
-  top: 170px !important;
+  right: 140px !important;
+  top: 142px !important;
   z-index: 10px !important;
   width: 130px !important;
+}
+
+.show_pose_side {
+  text-align: right !important;
 }
 
 .output_canvas {
@@ -34,14 +38,17 @@
     top: 600px !important;
   }
 
+  .show_pose_side {
+    top: 650px !important;
+  }
   .output_canvas {
     width: 300px !important;
     height: 380px !important;
-    top: 160px !important;
+    top: 200px !important;
   }
   .webcam_main {
     width: 300px !important;
     height: 380px !important;
-    top: 160px !important;
+    top: 200px !important;
   }
 }

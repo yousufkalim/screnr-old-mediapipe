@@ -8,6 +8,7 @@ import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 
 var captured = false;
 var camera = null;
+var pose_side = "";
 var showPoseLandmarks = true;
 
 // Pose component
@@ -18,6 +19,7 @@ export const PoseComponent = () => {
   let activeEffect = "mask";
   const [fps, setFps] = useState(0);
   const [currentWidth, setCurrentWidth] = useState(0);
+  const [poseSide, setPoseSide] = useState("BACK");
   let frames = [];
 
   // Initializing the pose component and camera
@@ -152,12 +154,40 @@ export const PoseComponent = () => {
       let leftSideProbability = leftSide / (leftSide + rightSide);
       let rightSideProbability = rightSide / (leftSide + rightSide);
 
-      // console.log(
-      //   "left:",
-      //   leftSideProbability.toFixed(2),
-      //   "right:",
-      //   rightSideProbability.toFixed(2)
-      // );
+      if (
+        leftSideProbability.toFixed(2) <= 0.52 &&
+        rightSideProbability.toFixed(2) <= 0.52
+      ) {
+        setPoseSide(
+          "CENTER " +
+            "R: " +
+            rightSideProbability.toFixed(2) +
+            " L: " +
+            leftSideProbability.toFixed(2)
+        );
+      } else if (
+        leftSideProbability.toFixed(2) >= 0.56 &&
+        rightSideProbability.toFixed(2) <= 0.52
+      ) {
+        setPoseSide(
+          "LEFT " +
+            "R: " +
+            rightSideProbability.toFixed(2) +
+            " L: " +
+            leftSideProbability.toFixed(2)
+        );
+      } else if (
+        rightSideProbability.toFixed(2) >= 0.56 &&
+        leftSideProbability.toFixed(2) <= 0.52
+      ) {
+        setPoseSide(
+          "RIGHT " +
+            "R: " +
+            rightSideProbability.toFixed(2) +
+            " L: " +
+            leftSideProbability.toFixed(2)
+        );
+      }
 
       if (showPoseLandmarks) {
         drawConnectors(
@@ -212,6 +242,10 @@ export const PoseComponent = () => {
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
 
         {/* Button To show or hide pose */}
+        <h4 className="show_pose_side">
+          Pose Side: <div style={{ color: "red" }}>{poseSide}</div>{" "}
+        </h4>
+
         <Button
           className="show_pose_btn"
           onClick={(e) => (showPoseLandmarks = !showPoseLandmarks)}
