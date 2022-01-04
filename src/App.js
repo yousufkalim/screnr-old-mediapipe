@@ -10,7 +10,9 @@ import { StoreProvider } from "./StoreContext";
 
 // Files
 import "./css/index.css";
+
 // Component
+
 function App() {
   return (
     <div className="App">
