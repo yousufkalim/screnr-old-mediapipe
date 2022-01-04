@@ -8,6 +8,7 @@ import { PoseComponent } from "../../components/MediaPipe/Pose";
 export default function Patients() {
   return (
     <div>
+      {/* Show the pose component */}
       <PoseComponent></PoseComponent>
       {/* <HolisticComponent></HolisticComponent> */}
     </div>

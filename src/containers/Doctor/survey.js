@@ -56,6 +56,7 @@ function a11yProps(index) {
   };
 }
 
+// Answer types to select for a question
 const AnswerTypes = [
   { id: "text", label: "Text Field" },
   { id: "checkBox", label: "CheckBox" },
@@ -64,6 +65,7 @@ const AnswerTypes = [
   { id: "date", label: "Date" },
   { id: "time", label: "Time" },
 ];
+
 // Survey Page
 export default function Survey() {
   const [value, setValue] = React.useState(0);
@@ -79,6 +81,7 @@ export default function Survey() {
     getPatients();
   }, []);
 
+  // Get all patient data
   const getPatients = async () => {
     const users = await api("get", "/users/getPatients");
     setPatients(users.data.patients);
@@ -99,16 +102,16 @@ export default function Survey() {
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
+        {/* Showing 2 tabs for create and view survey */}
+        <Tabs value={value} onChange={handleChange} aria-label="tabs">
           <Tab label="Create Survey" {...a11yProps(0)} />
           <Tab label="View Surveys" {...a11yProps(1)} />
         </Tabs>
       </Box>
+
+      {/* Tab 1 */}
       <TabPanel value={value} index={0}>
+        {/* Tab 1 title */}
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Typography
@@ -122,6 +125,7 @@ export default function Survey() {
           </Grid>
         </Grid>
         <Grid container spacing={2} sx={{ marginBottom: "20px" }}>
+          {/* Select the user you want to create the survey for */}
           <Grid
             item
             xs={12}
@@ -132,6 +136,7 @@ export default function Survey() {
               Survey For:
             </Typography>
           </Grid>
+          {/* list of all patient names in a dropdown */}
           <Grid item xs={12} sm={3}>
             <FormControl fullWidth>
               <InputLabel id="patientLabel">Patient</InputLabel>
@@ -157,6 +162,7 @@ export default function Survey() {
 
           <Grid item xs={12} md={12}></Grid>
         </Grid>
+        {/* If user selected, let the user add a question */}
         {showAddQuestion ? (
           <Grid container spacing={2}>
             <Grid
@@ -197,6 +203,7 @@ export default function Survey() {
                 onChange={(e) => setQuestion(e.target.value)}
               />
             </Grid>
+            {/* Select answer type */}
             <Grid
               item
               xs={12}
@@ -274,6 +281,8 @@ export default function Survey() {
           </Grid>
         </Grid>
       </TabPanel>
+
+      {/* Tab 2 */}
       <TabPanel value={value} index={1}>
         Item Two
       </TabPanel>

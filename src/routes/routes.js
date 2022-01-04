@@ -7,6 +7,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonIcon from "@mui/icons-material/Person";
 import PollIcon from "@mui/icons-material/Poll";
 
+// Routes for doctor
 var DoctorRoutes = [
   {
     path: "/profile",
@@ -31,6 +32,7 @@ var DoctorRoutes = [
   },
 ];
 
+// Routes for patient
 var PatientRoutes = [
   {
     path: "/survey",
@@ -41,6 +43,7 @@ var PatientRoutes = [
   },
 ];
 
+// Getting all routes
 const Routes = {
   DoctorRoutes,
   PatientRoutes,

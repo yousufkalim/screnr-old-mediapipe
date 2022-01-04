@@ -17,6 +17,7 @@ import FormControl from "@mui/material/FormControl";
 import { toast } from "react-toastify";
 import Api from "../../api/index";
 
+// Copyright component at the bottom
 function Copyright(props) {
   return (
     <Typography
@@ -37,6 +38,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
+// Sign in component
 export default function SignInSide() {
   const [islogin, setIsLogin] = React.useState(true);
   const [gender, setGender] = React.useState("");
@@ -49,6 +51,7 @@ export default function SignInSide() {
     setRole(event.target.value);
   };
 
+  // Calling login api with login data
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -67,13 +70,14 @@ export default function SignInSide() {
       toast.success("Login Successful!");
       localStorage.setItem("token", response.data.token);
       if (response.data.user.role === "patient") {
-        window.location = "/patient/profile";
+        window.location = "/patient/survey";
       } else {
         window.location = "/doctor/profile";
       }
     });
   };
 
+  // Calling register api with register data
   const handleRegisterSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -93,6 +97,7 @@ export default function SignInSide() {
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
+        {/* left side panal */}
         <Grid
           item
           xs={false}
@@ -110,8 +115,10 @@ export default function SignInSide() {
             backgroundPosition: "center",
           }}
         />
+        {/* Right side panel */}
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           {islogin ? (
+            // Login form
             <Box
               sx={{
                 my: 8,
@@ -189,6 +196,7 @@ export default function SignInSide() {
               </Box>
             </Box>
           ) : (
+            // Register form
             <Box
               sx={{
                 my: 8,
@@ -336,6 +344,7 @@ export default function SignInSide() {
               </Box>
             </Box>
           )}
+          {/* Copyright component at the bottom of the form */}
           <Copyright sx={{ mt: 5 }} />
         </Grid>
       </Grid>

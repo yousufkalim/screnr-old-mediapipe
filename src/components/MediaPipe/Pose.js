@@ -10,7 +10,9 @@ var captured = false;
 var camera = null;
 var showPoseLandmarks = true;
 
+// Pose component
 export const PoseComponent = () => {
+  //Initializing
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   let activeEffect = "mask";
@@ -18,6 +20,43 @@ export const PoseComponent = () => {
   const [currentWidth, setCurrentWidth] = useState(0);
   let frames = [];
 
+  // Initializing the pose component and camera
+  useEffect(() => {
+    const pose = new Pose({
+      locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+      },
+    });
+
+    pose.setOptions({
+      selfieMode: false,
+      modelComplexity: 1,
+      smoothLandmarks: true,
+      enableSegmentation: false,
+      smoothSegmentation: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+      // staticImageMode: true,
+    });
+
+    pose.onResults(onResults);
+
+    if (
+      typeof webcamRef.current !== "undefined" &&
+      webcamRef.current !== null
+    ) {
+      camera = new cam.Camera(webcamRef.current.video, {
+        onFrame: async () => {
+          await pose.send({ image: webcamRef.current.video });
+        },
+        width: webcamRef.current.video.videoWidth,
+        height: webcamRef.current.video.videoHeight,
+      });
+      camera.start();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Getting frames per second
   useEffect(() => {
     setInterval(() => {
       setFps(frames.length);
@@ -25,17 +64,21 @@ export const PoseComponent = () => {
     }, 1000);
   }, []);
 
+  // Getting current width if width changes
   useEffect(() => {
     setCurrentWidth(window.screen.width);
   }, [window.screen.width]);
 
+  // Results recieved from the pose component
   function onResults(results) {
     // FPS --> Pushing a string into frames array in order to get it's length after one second
     frames.push("frame");
 
     // const video = webcamRef.current.video;
-    const videoWidth = webcamRef.current.video.width;
-    const videoHeight = webcamRef.current.video.height;
+    const videoWidth =
+      window.screen.width < 600 ? 300 : webcamRef.current.video.videoWidth;
+    const videoHeight =
+      window.screen.width < 600 ? 200 : webcamRef.current.video.videoHeight;
 
     // Set canvas width
     canvasRef.current.width = videoWidth;
@@ -109,12 +152,12 @@ export const PoseComponent = () => {
       let leftSideProbability = leftSide / (leftSide + rightSide);
       let rightSideProbability = rightSide / (leftSide + rightSide);
 
-      console.log(
-        "left:",
-        leftSideProbability.toFixed(2),
-        "right:",
-        rightSideProbability.toFixed(2)
-      );
+      // console.log(
+      //   "left:",
+      //   leftSideProbability.toFixed(2),
+      //   "right:",
+      //   rightSideProbability.toFixed(2)
+      // );
 
       if (showPoseLandmarks) {
         drawConnectors(
@@ -160,52 +203,15 @@ export const PoseComponent = () => {
     captured = false;
   };
 
-  useEffect(() => {
-    const pose = new Pose({
-      locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-      },
-    });
-
-    pose.setOptions({
-      selfieMode: false,
-      modelComplexity: 1,
-      smoothLandmarks: true,
-      enableSegmentation: false,
-      smoothSegmentation: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-      // staticImageMode: true,
-    });
-
-    pose.onResults(onResults);
-
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null
-    ) {
-      camera = new cam.Camera(webcamRef.current.video, {
-        onFrame: async () => {
-          await pose.send({ image: webcamRef.current.video });
-        },
-        width: webcamRef.current.video.width,
-        height: webcamRef.current.video.height,
-      });
-      camera.start();
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <center>
       <div className="webCan">
-        <Webcam
-          className="webcam_main"
-          ref={webcamRef}
-          width={currentWidth < 600 ? 300 : 480}
-          height={currentWidth < 600 ? 400 : 320}
-        />
+        {/* React Webcam component */}
+        <Webcam className="webcam_main" ref={webcamRef} />
+        {/* Canvas to display th output */}
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
 
+        {/* Button To show or hide pose */}
         <Button
           className="show_pose_btn"
           onClick={(e) => (showPoseLandmarks = !showPoseLandmarks)}
@@ -214,6 +220,8 @@ export const PoseComponent = () => {
           Show Pose
         </Button>
       </div>
+
+      {/* Showing the frames per second */}
       <h1 className="show_fps" style={{ textAlign: "right" }}>
         {fps} FPS
       </h1>

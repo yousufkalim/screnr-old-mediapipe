@@ -8,6 +8,7 @@ import Login from "../components/home/login";
 export default function Home() {
   return (
     <div>
+      {/* Show login page */}
       <Login />
     </div>
   );

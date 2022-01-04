@@ -5,6 +5,7 @@ import Table from "../../components/common/Datatable";
 import api from "../../api";
 import Loader from "../../components/common/Loader";
 
+// patient table header data
 const columns = [
   { id: "name", label: "Name", minWidth: 170, align: "center" },
   { id: "gender", label: "Gender", minWidth: 170, align: "center" },
@@ -22,6 +23,7 @@ export default function Patients() {
     getUsers();
   }, []);
 
+  //getting all users
   const getUsers = async () => {
     const users = await api("get", "/users/getPatients");
     setUsers(users.data.patients);
@@ -29,6 +31,7 @@ export default function Patients() {
 
   return (
     <div className="patientslist_main_container">
+      {/* Heading Text */}
       <Typography
         variant="h4"
         noWrap
@@ -37,6 +40,7 @@ export default function Patients() {
       >
         Patients
       </Typography>
+      {/* Show patient table or a loader if table not loaded */}
       {users ? <Table columns={columns} rows={users}></Table> : <Loader />}
     </div>
   );

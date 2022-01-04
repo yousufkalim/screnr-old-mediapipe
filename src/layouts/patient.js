@@ -12,7 +12,7 @@ const Patient = (props) => {
   const { user, loggedIn } = Store();
 
   useEffect(() => {
-    // check auth
+    // check if user token is valid or not
     Api("get", "/auth").then((res) => {
       updateStore({
         loggedIn: true,
@@ -22,6 +22,7 @@ const Patient = (props) => {
     });
   }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Get all the routes related to the patient
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (loggedIn) {
@@ -46,13 +47,16 @@ const Patient = (props) => {
   return (
     <>
       {loggedIn ? (
+        // sidebar drawer component for patient
         <SideBar routes={Routes.PatientRoutes}>
           <div className="main-container">
+            {/* go to the default or selected route*/}
             <Switch>{getRoutes(Routes.PatientRoutes)}</Switch>
           </div>
         </SideBar>
       ) : (
         <div>
+          {/* Show loader while checking if logged in */}
           <FullLoader />
         </div>
       )}
