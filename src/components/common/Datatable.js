@@ -14,6 +14,7 @@ import { useHistory } from "react-router-dom";
 
 import Modal from "./Modal";
 
+// Table component
 export default function StickyHeadTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);

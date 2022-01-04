@@ -25,9 +25,11 @@ function App() {
         limit={3}
       />
 
+      {/* setting up main routing container and store container */}
       <BrowserRouter>
         <StoreProvider>
           <Switch>
+            {/* main routes */}
             <Route
               path="/patient"
               render={(props) => <PatientLayout {...props} />}

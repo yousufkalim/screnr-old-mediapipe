@@ -22,8 +22,8 @@ import Tooltip from "@mui/material/Tooltip";
 const drawerWidth = 240;
 const settings = ["Profile", "Logout"];
 
+//Drawer component for all users
 function ResponsiveDrawer(props) {
-  const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -44,6 +44,7 @@ function ResponsiveDrawer(props) {
     window.location = "/home";
   };
 
+  // Mapping data to the drawer list
   const drawer = (
     <div>
       <Toolbar />
@@ -64,14 +65,12 @@ function ResponsiveDrawer(props) {
     </div>
   );
 
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
+        {/* Show top app bar */}
         <AppBar
           position="fixed"
           sx={{
@@ -137,13 +136,13 @@ function ResponsiveDrawer(props) {
           </Toolbar>
         </AppBar>
       </Box>
+      {/* Show the drawer both desktop and mobile based on screen size */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
         <Drawer
-          container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
