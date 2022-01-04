@@ -36,12 +36,12 @@
 
   .output_canvas {
     width: 300px !important;
-    height: 200px !important;
+    height: 300px !important;
     top: 160px !important;
   }
   .webcam_main {
     width: 300px !important;
-    height: 200px !important;
+    height: 300px !important;
     top: 160px !important;
   }
 }

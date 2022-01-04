@@ -29,7 +29,7 @@ export const PoseComponent = () => {
     });
 
     pose.setOptions({
-      selfieMode: false,
+      selfieMode: true,
       modelComplexity: 1,
       smoothLandmarks: true,
       enableSegmentation: false,
@@ -78,7 +78,7 @@ export const PoseComponent = () => {
     const videoWidth =
       window.screen.width < 600 ? 300 : webcamRef.current.video.videoWidth;
     const videoHeight =
-      window.screen.width < 600 ? 200 : webcamRef.current.video.videoHeight;
+      window.screen.width < 600 ? 300 : webcamRef.current.video.videoHeight;
 
     // Set canvas width
     canvasRef.current.width = videoWidth;
