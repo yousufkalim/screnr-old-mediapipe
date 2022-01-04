@@ -35,13 +35,13 @@
   }
 
   .output_canvas {
-    width: 200px !important;
-    height: 300px !important;
+    width: 300px !important;
+    height: 380px !important;
     top: 160px !important;
   }
   .webcam_main {
-    width: 200px !important;
-    height: 300px !important;
+    width: 300px !important;
+    height: 380px !important;
     top: 160px !important;
   }
 }
