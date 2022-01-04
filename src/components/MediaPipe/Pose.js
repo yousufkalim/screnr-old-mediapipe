@@ -153,6 +153,7 @@ export const PoseComponent = () => {
 
     canvasCtx.restore();
   }
+
   const handleReset = () => {
     var resetDiv = document.getElementById("POSE");
     resetDiv.innerHTML = "";
@@ -201,7 +202,7 @@ export const PoseComponent = () => {
           className="webcam_main"
           ref={webcamRef}
           width={currentWidth < 600 ? 300 : 480}
-          height={currentWidth < 600 ? 200 : 320}
+          height={currentWidth < 600 ? 400 : 320}
         />
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
 

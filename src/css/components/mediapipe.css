@@ -31,17 +31,17 @@
 
 @media only screen and (max-width: 600px) {
   .show_pose_btn {
-    top: 420px !important;
+    top: 600px !important;
   }
 
   .output_canvas {
     width: 300px !important;
-    height: 200px !important;
+    height: 400px !important;
     top: 160px !important;
   }
   .webcam_main {
     width: 300px !important;
-    height: 200px !important;
+    height: 400px !important;
     top: 160px !important;
   }
 }

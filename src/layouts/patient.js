@@ -35,7 +35,7 @@ const Patient = (props) => {
             />
           );
         } else {
-          return (window.location = "/doctor/profile");
+          return (window.location = "/doctor/survey");
         }
       } else {
         return null;
