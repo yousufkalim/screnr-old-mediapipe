@@ -76,7 +76,7 @@ export const PoseComponent = () => {
 
     // const video = webcamRef.current.video;
     const videoWidth =
-      window.screen.width < 600 ? 300 : webcamRef.current.video.videoWidth;
+      window.screen.width < 600 ? 200 : webcamRef.current.video.videoWidth;
     const videoHeight =
       window.screen.width < 600 ? 300 : webcamRef.current.video.videoHeight;
 
