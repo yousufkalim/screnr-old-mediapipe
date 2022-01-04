@@ -51,8 +51,8 @@ export const PoseComponent = () => {
         onFrame: async () => {
           await pose.send({ image: webcamRef.current.video });
         },
-        width: webcamRef.current.video.videoWidth,
-        height: webcamRef.current.video.videoHeight,
+        width: 640,
+        height: 480,
       });
       camera.start();
     }
