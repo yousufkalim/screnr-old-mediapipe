@@ -21,6 +21,7 @@ export const PoseComponent = () => {
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
   let frames = [];
+  let loopCounter = 0;
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -49,7 +50,10 @@ export const PoseComponent = () => {
     ) {
       camera = new cam.Camera(webcamRef.current.video, {
         onFrame: async () => {
-          await pose.send({ image: webcamRef.current.video });
+          loopCounter++;
+          if (loopCounter % 2 === 0) {
+            await pose.send({ image: webcamRef.current.video });
+          }
         },
         width: 640,
         height: 480,
