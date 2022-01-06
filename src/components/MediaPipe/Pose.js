@@ -20,7 +20,7 @@ export const PoseComponent = () => {
   const [fps, setFps] = useState(0);
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
-  let frames = [];
+  let landmarks = [];
   let loopCounter = 0;
 
   // Initializing the pose component and camera
@@ -65,10 +65,16 @@ export const PoseComponent = () => {
   // Getting frames per second
   useEffect(() => {
     setInterval(() => {
-      setFps(frames.length);
-      frames = [];
+      setFps(landmarks.length);
+      landmarks = [];
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    if (loopCounter % 2 !== 0) {
+      onResults(landmarks.pop());
+    }
+  }, [landmarks]);
 
   // Getting current width if width changes
   useEffect(() => {
@@ -78,7 +84,7 @@ export const PoseComponent = () => {
   // Results recieved from the pose component
   function onResults(results) {
     // FPS --> Pushing a string into frames array in order to get it's length after one second
-    frames.push("frame");
+    landmarks.push(results);
 
     // const video = webcamRef.current.video;
     const videoWidth =
