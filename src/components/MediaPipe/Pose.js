@@ -20,8 +20,9 @@ export const PoseComponent = () => {
   const [fps, setFps] = useState(0);
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
-  let landmarks = [];
-  let loopCounter = 0;
+  let [loopCounter, setLoopCounter] = useState(0);
+  let [landmarks, setLandmarks] = useState(undefined);
+  let frames = 0;
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -50,7 +51,7 @@ export const PoseComponent = () => {
     ) {
       camera = new cam.Camera(webcamRef.current.video, {
         onFrame: async () => {
-          loopCounter++;
+          setLoopCounter(loopCounter++);
           if (loopCounter % 2 === 0) {
             await pose.send({ image: webcamRef.current.video });
           }
@@ -65,16 +66,16 @@ export const PoseComponent = () => {
   // Getting frames per second
   useEffect(() => {
     setInterval(() => {
-      setFps(landmarks.length);
-      landmarks = [];
+      setFps(frames);
+      frames = 0;
     }, 1000);
   }, []);
 
   useEffect(() => {
-    if (loopCounter % 2 !== 0) {
-      onResults(landmarks.pop());
+    if (landmarks && loopCounter % 2 !== 0) {
+      onResults(landmarks);
     }
-  }, [landmarks]);
+  }, [loopCounter]);
 
   // Getting current width if width changes
   useEffect(() => {
@@ -82,9 +83,10 @@ export const PoseComponent = () => {
   }, [window.screen.width]);
 
   // Results recieved from the pose component
-  function onResults(results) {
+  function onResults(results, text) {
     // FPS --> Pushing a string into frames array in order to get it's length after one second
-    landmarks.push(results);
+    frames++;
+    setLandmarks(results);
 
     // const video = webcamRef.current.video;
     const videoWidth =
