@@ -10,6 +10,8 @@ var captured = false;
 var camera = null;
 var pose_side = "";
 var showPoseLandmarks = true;
+var landmarks = undefined; // initializing default landmarks variable to send in onResult function when loopCounter is odd
+var frames = 0;
 
 // Pose component
 export const PoseComponent = () => {
@@ -21,8 +23,6 @@ export const PoseComponent = () => {
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
   let [loopCounter, setLoopCounter] = useState(0);
-  let [landmarks, setLandmarks] = useState(undefined);
-  let frames = 0;
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -51,7 +51,9 @@ export const PoseComponent = () => {
     ) {
       camera = new cam.Camera(webcamRef.current.video, {
         onFrame: async () => {
-          setLoopCounter(loopCounter++);
+          setLoopCounter(loopCounter++); // Incrementing the loop counter on every frame that we are getting from webcam
+
+          // When loop counter is even then we will call mediapipe to process the frame, That's how we are skipping every second frame
           if (loopCounter % 2 === 0) {
             await pose.send({ image: webcamRef.current.video });
           }
@@ -71,11 +73,12 @@ export const PoseComponent = () => {
     }, 1000);
   }, []);
 
+  // If loop counter is odd then we will call onResult function by our own to draw previous frame's landmark
   useEffect(() => {
     if (landmarks && loopCounter % 2 !== 0) {
       onResults(landmarks);
     }
-  }, [loopCounter]);
+  }, [loopCounter]); // This code should run on every increment of loopCounter
 
   // Getting current width if width changes
   useEffect(() => {
@@ -83,10 +86,11 @@ export const PoseComponent = () => {
   }, [window.screen.width]);
 
   // Results recieved from the pose component
-  function onResults(results, text) {
-    // FPS --> Pushing a string into frames array in order to get it's length after one second
+  function onResults(results) {
+    // FPS --> Incrementing frames variable to calculate the frames after one second, because this onResult function runs on every frame to draw landmarks
     frames++;
-    setLandmarks(results);
+
+    landmarks = results; // Setting the result to a landmarks variable to use when we call this function odd times
 
     // const video = webcamRef.current.video;
     const videoWidth =
