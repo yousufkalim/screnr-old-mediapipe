@@ -6,9 +6,7 @@ import * as cam from "@mediapipe/camera_utils";
 import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 
-var captured = false;
 var camera = null;
-var pose_side = "";
 var showPoseLandmarks = true;
 var landmarks = undefined; // initializing default landmarks variable to send in onResult function when loopCounter is odd
 var frames = 0;
@@ -23,6 +21,8 @@ export const PoseComponent = () => {
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
   let [loopCounter, setLoopCounter] = useState(0);
+  let [takeScreenshot, setTakeScreenshot] = useState(false);
+  let [image, setImage] = useState();
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -73,6 +73,15 @@ export const PoseComponent = () => {
     }, 1000);
   }, []);
 
+  useEffect(() => {
+    if (takeScreenshot) {
+      let img = webcamRef.current.getScreenshot();
+      setImage(img);
+    } else {
+      setImage();
+    }
+  }, [takeScreenshot]);
+
   // If loop counter is odd then we will call onResult function by our own to draw previous frame's landmark
   useEffect(() => {
     if (landmarks && loopCounter % 2 !== 0) {
@@ -93,10 +102,10 @@ export const PoseComponent = () => {
     landmarks = results; // Setting the result to a landmarks variable to use when we call this function odd times
 
     // const video = webcamRef.current.video;
-    const videoWidth =
-      window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
-    const videoHeight =
-      window.screen.width < 600 ? 720 : webcamRef.current.video.videoHeight;
+    const videoWidth = 1280;
+    // window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
+    const videoHeight = 720;
+    // window.screen.width < 600 ? 720 : webcamRef.current.video.videoHeight;
 
     // Set canvas width
     canvasRef.current.width = videoWidth;
@@ -205,6 +214,18 @@ export const PoseComponent = () => {
         );
       }
 
+      if (
+        results.poseLandmarks[20].y.toFixed(2) <
+        results.poseLandmarks[0].y.toFixed(2)
+      ) {
+        setTakeScreenshot(true);
+      } else if (
+        results.poseLandmarks[19].y.toFixed(2) <
+        results.poseLandmarks[0].y.toFixed(2)
+      ) {
+        setTakeScreenshot(false);
+      }
+
       if (showPoseLandmarks) {
         drawConnectors(
           canvasCtx,
@@ -243,12 +264,6 @@ export const PoseComponent = () => {
     canvasCtx.restore();
   }
 
-  const handleReset = () => {
-    var resetDiv = document.getElementById("POSE");
-    resetDiv.innerHTML = "";
-    captured = false;
-  };
-
   return (
     <center>
       <div className="webCan">
@@ -259,6 +274,7 @@ export const PoseComponent = () => {
           videoConstraints={{
             height: 720,
             width: 1280,
+            frameRate: { ideal: 30, max: 60 },
           }}
         />
         {/* Canvas to display th output */}
@@ -293,6 +309,19 @@ export const PoseComponent = () => {
       >
         {fps} FPS
       </h1>
+      {image && (
+        <img
+          style={{
+            position: "absolute",
+            zIndex: 20,
+            left: 260,
+            top: 100,
+            width: "300px",
+            height: "300px",
+          }}
+          src={image}
+        />
+      )}
     </center>
   );
 };
