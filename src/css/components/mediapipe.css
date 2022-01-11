@@ -14,23 +14,21 @@
   position: absolute !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  left: 0px !important;
-  right: 0px !important;
+  right: 10px !important;
   text-align: center !important;
   z-index: -1 !important;
-  width: 1280px !important;
-  height: 720px !important;
+  width: 80% !important;
+  height: 86% !important;
 }
 .webcam_main {
   position: absolute !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  left: 0px !important;
-  right: 0px !important;
+  right: 10px !important;
   text-align: center !important;
   z-index: -1 !important;
-  width: 1280px !important;
-  height: 720px !important;
+  width: 80% !important;
+  height: 86% !important;
 }
 
 @media only screen and (max-width: 600px) {
@@ -45,10 +43,12 @@
     width: 100vw !important;
     height: 100vh !important;
     top: 0 !important;
+    left: 0px !important;
   }
   .webcam_main {
     width: 100vw !important;
     height: 100vh !important;
     top: 0 !important;
+    left: 0px !important;
   }
 }
