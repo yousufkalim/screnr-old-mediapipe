@@ -17,9 +17,9 @@
   left: 0px !important;
   right: 0px !important;
   text-align: center !important;
-  z-index: 9 !important;
-  width: 640px !important;
-  height: 480px !important;
+  z-index: -1 !important;
+  width: 1280px !important;
+  height: 720px !important;
 }
 .webcam_main {
   position: absolute !important;
@@ -28,27 +28,27 @@
   left: 0px !important;
   right: 0px !important;
   text-align: center !important;
-  z-index: 9 !important;
-  width: 640px !important;
-  height: 480px !important;
+  z-index: -1 !important;
+  width: 1280px !important;
+  height: 720px !important;
 }
 
 @media only screen and (max-width: 600px) {
   .show_pose_btn {
-    top: 600px !important;
+    top: 90vh !important;
   }
 
   .show_pose_side {
     top: 650px !important;
   }
   .output_canvas {
-    width: 300px !important;
-    height: 380px !important;
-    top: 200px !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    top: 0 !important;
   }
   .webcam_main {
-    width: 300px !important;
-    height: 380px !important;
-    top: 200px !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    top: 0 !important;
   }
 }

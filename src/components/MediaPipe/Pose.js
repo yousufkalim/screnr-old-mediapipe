@@ -58,8 +58,8 @@ export const PoseComponent = () => {
             await pose.send({ image: webcamRef.current.video });
           }
         },
-        width: 640,
-        height: 480,
+        width: 1280,
+        height: 720,
       });
       camera.start();
     }
@@ -94,9 +94,9 @@ export const PoseComponent = () => {
 
     // const video = webcamRef.current.video;
     const videoWidth =
-      window.screen.width < 600 ? 300 : webcamRef.current.video.videoWidth;
+      window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
     const videoHeight =
-      window.screen.width < 600 ? 380 : webcamRef.current.video.videoHeight;
+      window.screen.width < 600 ? 720 : webcamRef.current.video.videoHeight;
 
     // Set canvas width
     canvasRef.current.width = videoWidth;
@@ -253,12 +253,24 @@ export const PoseComponent = () => {
     <center>
       <div className="webCan">
         {/* React Webcam component */}
-        <Webcam className="webcam_main" ref={webcamRef} />
+        <Webcam
+          className="webcam_main"
+          ref={webcamRef}
+          videoConstraints={{
+            height: 720,
+            width: 1280,
+          }}
+        />
         {/* Canvas to display th output */}
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
 
         {/* Button To show or hide pose */}
-        <h4 className="show_pose_side">
+        <h4
+          className="show_pose_side"
+          style={{
+            color: window.screen.width < 600 ? "black" : "white",
+          }}
+        >
           Pose Side: <div style={{ color: "red" }}>{poseSide}</div>{" "}
         </h4>
 
@@ -272,7 +284,13 @@ export const PoseComponent = () => {
       </div>
 
       {/* Showing the frames per second */}
-      <h1 className="show_fps" style={{ textAlign: "right" }}>
+      <h1
+        className="show_fps"
+        style={{
+          textAlign: "right",
+          color: window.screen.width < 600 ? "black" : "white",
+        }}
+      >
         {fps} FPS
       </h1>
     </center>
