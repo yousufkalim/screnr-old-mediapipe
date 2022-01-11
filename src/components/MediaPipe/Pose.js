@@ -6,9 +6,7 @@ import * as cam from "@mediapipe/camera_utils";
 import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 
-var captured = false;
 var camera = null;
-var pose_side = "";
 var showPoseLandmarks = true;
 var landmarks = undefined; // initializing default landmarks variable to send in onResult function when loopCounter is odd
 var frames = 0;
@@ -23,6 +21,8 @@ export const PoseComponent = () => {
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
   let [loopCounter, setLoopCounter] = useState(0);
+  let [takeScreenshot, setTakeScreenshot] = useState(false);
+  let [image, setImage] = useState();
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -73,6 +73,15 @@ export const PoseComponent = () => {
     }, 1000);
   }, []);
 
+  useEffect(() => {
+    if (takeScreenshot) {
+      let img = webcamRef.current.getScreenshot();
+      setImage(img);
+    } else {
+      setImage();
+    }
+  }, [takeScreenshot]);
+
   // If loop counter is odd then we will call onResult function by our own to draw previous frame's landmark
   useEffect(() => {
     if (landmarks && loopCounter % 2 !== 0) {
@@ -93,10 +102,10 @@ export const PoseComponent = () => {
     landmarks = results; // Setting the result to a landmarks variable to use when we call this function odd times
 
     // const video = webcamRef.current.video;
-    const videoWidth =
-      window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
-    const videoHeight =
-      window.screen.width < 600 ? 720 : webcamRef.current.video.videoHeight;
+    const videoWidth = 1280;
+    // window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
+    const videoHeight = 720;
+    // window.screen.width < 600 ? 720 : webcamRef.current.video.videoHeight;
 
     // Set canvas width
     canvasRef.current.width = videoWidth;
@@ -149,8 +158,48 @@ export const PoseComponent = () => {
       );
     }
 
-    // CHECK IF ITS THE POSE
+    // CHECK IF RESULT CONTAINS POSE LANDMARKS
     if (results.poseLandmarks) {
+      // Angle Detection
+
+      const left_knee_joint_angle_radians =
+        Math.abs(
+          Math.atan2(
+            results.poseLandmarks[27].y - results.poseLandmarks[25].y,
+            results.poseLandmarks[27].x - results.poseLandmarks[25].x
+          )
+        ) -
+        Math.atan2(
+          results.poseLandmarks[23].y - results.poseLandmarks[25].y,
+          results.poseLandmarks[23].x - results.poseLandmarks[25].x
+        );
+      const left_knee_joint_angle_degrees = Math.round(
+        (left_knee_joint_angle_radians * 180.0) / Math.PI,
+        1
+      );
+
+      const right_knee_joint_angle_radians =
+        Math.abs(
+          Math.atan2(
+            results.poseLandmarks[28].y - results.poseLandmarks[26].y,
+            results.poseLandmarks[28].x - results.poseLandmarks[26].x
+          )
+        ) -
+        Math.atan2(
+          results.poseLandmarks[24].y - results.poseLandmarks[26].y,
+          results.poseLandmarks[24].x - results.poseLandmarks[26].x
+        );
+      const right_knee_joint_angle_degrees = Math.round(
+        (right_knee_joint_angle_radians * 180.0) / Math.PI,
+        1
+      );
+
+      console.log(
+        "knee_joint_angle_degrees",
+        left_knee_joint_angle_degrees,
+        right_knee_joint_angle_degrees
+      );
+      // Coords for left side of the body
       let leftSide =
         results.poseLandmarks[11].visibility +
         results.poseLandmarks[13].visibility +
@@ -159,6 +208,7 @@ export const PoseComponent = () => {
         results.poseLandmarks[25].visibility +
         results.poseLandmarks[27].visibility;
 
+      // Coords for right side of the body
       let rightSide =
         results.poseLandmarks[12].visibility +
         results.poseLandmarks[14].visibility +
@@ -167,9 +217,11 @@ export const PoseComponent = () => {
         results.poseLandmarks[26].visibility +
         results.poseLandmarks[28].visibility;
 
+      // Probability calculation for left and right sides
       let leftSideProbability = leftSide / (leftSide + rightSide);
       let rightSideProbability = rightSide / (leftSide + rightSide);
 
+      // If both sides are facing screen, show center
       if (
         leftSideProbability.toFixed(2) <= 0.52 &&
         rightSideProbability.toFixed(2) <= 0.52
@@ -181,7 +233,9 @@ export const PoseComponent = () => {
             " L: " +
             leftSideProbability.toFixed(2)
         );
-      } else if (
+      }
+      // If left side is ahead
+      else if (
         leftSideProbability.toFixed(2) >= 0.56 &&
         rightSideProbability.toFixed(2) <= 0.52
       ) {
@@ -192,7 +246,9 @@ export const PoseComponent = () => {
             " L: " +
             leftSideProbability.toFixed(2)
         );
-      } else if (
+      }
+      // If right side is ahead
+      else if (
         rightSideProbability.toFixed(2) >= 0.56 &&
         leftSideProbability.toFixed(2) <= 0.52
       ) {
@@ -205,6 +261,20 @@ export const PoseComponent = () => {
         );
       }
 
+      // taking screenshot when hand is above nose
+      // if (
+      //   results.poseLandmarks[20].y.toFixed(2) <
+      //   results.poseLandmarks[0].y.toFixed(2)
+      // ) {
+      //   setTakeScreenshot(true);
+      // } else if (
+      //   results.poseLandmarks[19].y.toFixed(2) <
+      //   results.poseLandmarks[0].y.toFixed(2)
+      // ) {
+      //   setTakeScreenshot(false);
+      // }
+
+      // Drawing landmarks
       if (showPoseLandmarks) {
         drawConnectors(
           canvasCtx,
@@ -243,12 +313,6 @@ export const PoseComponent = () => {
     canvasCtx.restore();
   }
 
-  const handleReset = () => {
-    var resetDiv = document.getElementById("POSE");
-    resetDiv.innerHTML = "";
-    captured = false;
-  };
-
   return (
     <center>
       <div className="webCan">
@@ -259,6 +323,7 @@ export const PoseComponent = () => {
           videoConstraints={{
             height: 720,
             width: 1280,
+            frameRate: { ideal: 30, max: 60 },
           }}
         />
         {/* Canvas to display th output */}
@@ -293,6 +358,19 @@ export const PoseComponent = () => {
       >
         {fps} FPS
       </h1>
+      {image && (
+        <img
+          style={{
+            position: "absolute",
+            zIndex: 20,
+            left: 260,
+            top: 100,
+            width: "300px",
+            height: "300px",
+          }}
+          src={image}
+        />
+      )}
     </center>
   );
 };
