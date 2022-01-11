@@ -158,8 +158,48 @@ export const PoseComponent = () => {
       );
     }
 
-    // CHECK IF ITS THE POSE
+    // CHECK IF RESULT CONTAINS POSE LANDMARKS
     if (results.poseLandmarks) {
+      // Angle Detection
+
+      const left_knee_joint_angle_radians =
+        Math.abs(
+          Math.atan2(
+            results.poseLandmarks[27].y - results.poseLandmarks[25].y,
+            results.poseLandmarks[27].x - results.poseLandmarks[25].x
+          )
+        ) -
+        Math.atan2(
+          results.poseLandmarks[23].y - results.poseLandmarks[25].y,
+          results.poseLandmarks[23].x - results.poseLandmarks[25].x
+        );
+      const left_knee_joint_angle_degrees = Math.round(
+        (left_knee_joint_angle_radians * 180.0) / Math.PI,
+        1
+      );
+
+      const right_knee_joint_angle_radians =
+        Math.abs(
+          Math.atan2(
+            results.poseLandmarks[28].y - results.poseLandmarks[26].y,
+            results.poseLandmarks[28].x - results.poseLandmarks[26].x
+          )
+        ) -
+        Math.atan2(
+          results.poseLandmarks[24].y - results.poseLandmarks[26].y,
+          results.poseLandmarks[24].x - results.poseLandmarks[26].x
+        );
+      const right_knee_joint_angle_degrees = Math.round(
+        (right_knee_joint_angle_radians * 180.0) / Math.PI,
+        1
+      );
+
+      console.log(
+        "knee_joint_angle_degrees",
+        left_knee_joint_angle_degrees,
+        right_knee_joint_angle_degrees
+      );
+      // Coords for left side of the body
       let leftSide =
         results.poseLandmarks[11].visibility +
         results.poseLandmarks[13].visibility +
@@ -168,6 +208,7 @@ export const PoseComponent = () => {
         results.poseLandmarks[25].visibility +
         results.poseLandmarks[27].visibility;
 
+      // Coords for right side of the body
       let rightSide =
         results.poseLandmarks[12].visibility +
         results.poseLandmarks[14].visibility +
@@ -176,9 +217,11 @@ export const PoseComponent = () => {
         results.poseLandmarks[26].visibility +
         results.poseLandmarks[28].visibility;
 
+      // Probability calculation for left and right sides
       let leftSideProbability = leftSide / (leftSide + rightSide);
       let rightSideProbability = rightSide / (leftSide + rightSide);
 
+      // If both sides are facing screen, show center
       if (
         leftSideProbability.toFixed(2) <= 0.52 &&
         rightSideProbability.toFixed(2) <= 0.52
@@ -190,7 +233,9 @@ export const PoseComponent = () => {
             " L: " +
             leftSideProbability.toFixed(2)
         );
-      } else if (
+      }
+      // If left side is ahead
+      else if (
         leftSideProbability.toFixed(2) >= 0.56 &&
         rightSideProbability.toFixed(2) <= 0.52
       ) {
@@ -201,7 +246,9 @@ export const PoseComponent = () => {
             " L: " +
             leftSideProbability.toFixed(2)
         );
-      } else if (
+      }
+      // If right side is ahead
+      else if (
         rightSideProbability.toFixed(2) >= 0.56 &&
         leftSideProbability.toFixed(2) <= 0.52
       ) {
@@ -214,18 +261,20 @@ export const PoseComponent = () => {
         );
       }
 
-      if (
-        results.poseLandmarks[20].y.toFixed(2) <
-        results.poseLandmarks[0].y.toFixed(2)
-      ) {
-        setTakeScreenshot(true);
-      } else if (
-        results.poseLandmarks[19].y.toFixed(2) <
-        results.poseLandmarks[0].y.toFixed(2)
-      ) {
-        setTakeScreenshot(false);
-      }
+      // taking screenshot when hand is above nose
+      // if (
+      //   results.poseLandmarks[20].y.toFixed(2) <
+      //   results.poseLandmarks[0].y.toFixed(2)
+      // ) {
+      //   setTakeScreenshot(true);
+      // } else if (
+      //   results.poseLandmarks[19].y.toFixed(2) <
+      //   results.poseLandmarks[0].y.toFixed(2)
+      // ) {
+      //   setTakeScreenshot(false);
+      // }
 
+      // Drawing landmarks
       if (showPoseLandmarks) {
         drawConnectors(
           canvasCtx,
