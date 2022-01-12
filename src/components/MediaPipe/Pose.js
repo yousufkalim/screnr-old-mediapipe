@@ -5,6 +5,7 @@ import { Pose } from "@mediapipe/pose";
 import * as cam from "@mediapipe/camera_utils";
 import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
+import { updateLandmarks } from "../../utils/updateLandmarks";
 
 var camera = null;
 var showPoseLandmarks = true;
@@ -101,6 +102,9 @@ export const PoseComponent = () => {
 
     landmarks = results; // Setting the result to a landmarks variable to use when we call this function odd times
 
+    // With this function we will convert the landmarks array to an object with joint names
+    const updatedLandmarks = updateLandmarks(results.poseLandmarks);
+
     // const video = webcamRef.current.video;
     const videoWidth = 1280;
     // window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
@@ -194,11 +198,6 @@ export const PoseComponent = () => {
         1
       );
 
-      console.log(
-        "knee_joint_angle_degrees",
-        left_knee_joint_angle_degrees,
-        right_knee_joint_angle_degrees
-      );
       // Coords for left side of the body
       let leftSide =
         results.poseLandmarks[11].visibility +
