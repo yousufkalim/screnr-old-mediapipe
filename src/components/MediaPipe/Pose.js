@@ -13,6 +13,10 @@ var showPoseLandmarks = true;
 var landmarks = undefined; // initializing default landmarks variable to send in onResult function when loopCounter is odd
 var frames = 0;
 
+// Smooth landmarks
+var frameSets = [];
+var smoothFrame = new Array();
+
 // Pose component
 export const PoseComponent = () => {
   //Initializing
@@ -96,13 +100,62 @@ export const PoseComponent = () => {
     setCurrentWidth(window.screen.width);
   }, [window.screen.width]);
 
-  // Results recieved from the pose component
-  function onResults(results) {
+  const onResults = (results) => {
     // FPS --> Incrementing frames variable to calculate the frames after one second, because this onResult function runs on every frame to draw landmarks
     frames++;
 
     landmarks = results; // Setting the result to a landmarks variable to use when we call this function odd times
 
+    // Pushing frame at the end of frameSet array
+    if (results.poseLandmarks) {
+      frameSets.push(results.poseLandmarks);
+    }
+
+    if (frameSets.length === 8) {
+      // This loop will run 33 time to make average of each joint
+      for (let i = 0; i < 33; i++) {
+        // Making an array of each joints coordinates
+        let x = frameSets.map((a) => a[i].x);
+        let y = frameSets.map((a) => a[i].y);
+        let z = frameSets.map((a) => a[i].z);
+        let visibility = frameSets.map((a) => a[i].visibility);
+
+        // Sorting the array into ascending order
+        x = x.sort((a, b) => a - b);
+        y = y.sort((a, b) => a - b);
+        z = z.sort((a, b) => a - b);
+        visibility = visibility.sort((a, b) => a - b);
+
+        // Dropping 2 min and 2 max coordinates
+        x = x.slice(2, 6);
+        y = y.slice(2, 6);
+        z = z.slice(2, 6);
+        visibility = visibility.slice(2, 6);
+
+        // Making the average of 4 remaining coordinates
+        smoothFrame[i] = {
+          x: x.reduce((a, b) => a + b, 0) / x.length,
+          y: y.reduce((a, b) => a + b, 0) / y.length,
+          z: z.reduce((a, b) => a + b, 0) / z.length,
+          visibility: visibility.reduce((a, b) => a + b, 0) / visibility.length,
+        };
+      }
+
+      // Removing the first frame from frameSet
+      frameSets.shift();
+    }
+
+    // after first 8 frames we have averaged coordinates, So now updating the poseLandmarks with averaged coordinates
+    if (smoothFrame.length > 0) {
+      results.poseLandmarks = smoothFrame;
+    }
+
+    // This function will draw the coordinates
+    drawOnCanvas(results);
+  };
+
+  // Results received from the pose component
+  function drawOnCanvas(results) {
     // const video = webcamRef.current.video;
     const videoWidth = 1280;
     // window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
