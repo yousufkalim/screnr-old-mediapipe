@@ -5,6 +5,8 @@ import { Pose } from "@mediapipe/pose";
 import * as cam from "@mediapipe/camera_utils";
 import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
+import { updateLandmarks } from "../../utils/updateLandmarks";
+import calculateAngles from "../../utils/calculateAngles";
 
 var camera = null;
 var showPoseLandmarks = true;
@@ -160,45 +162,11 @@ export const PoseComponent = () => {
 
     // CHECK IF RESULT CONTAINS POSE LANDMARKS
     if (results.poseLandmarks) {
-      // Angle Detection
+      // With this function we will convert the landmarks array to an object with joint names
+      const updatedLandmarks = updateLandmarks(results.poseLandmarks);
 
-      const left_knee_joint_angle_radians =
-        Math.abs(
-          Math.atan2(
-            results.poseLandmarks[27].y - results.poseLandmarks[25].y,
-            results.poseLandmarks[27].x - results.poseLandmarks[25].x
-          )
-        ) -
-        Math.atan2(
-          results.poseLandmarks[23].y - results.poseLandmarks[25].y,
-          results.poseLandmarks[23].x - results.poseLandmarks[25].x
-        );
-      const left_knee_joint_angle_degrees = Math.round(
-        (left_knee_joint_angle_radians * 180.0) / Math.PI,
-        1
-      );
+      console.log(calculateAngles.shoulder(updatedLandmarks));
 
-      const right_knee_joint_angle_radians =
-        Math.abs(
-          Math.atan2(
-            results.poseLandmarks[28].y - results.poseLandmarks[26].y,
-            results.poseLandmarks[28].x - results.poseLandmarks[26].x
-          )
-        ) -
-        Math.atan2(
-          results.poseLandmarks[24].y - results.poseLandmarks[26].y,
-          results.poseLandmarks[24].x - results.poseLandmarks[26].x
-        );
-      const right_knee_joint_angle_degrees = Math.round(
-        (right_knee_joint_angle_radians * 180.0) / Math.PI,
-        1
-      );
-
-      console.log(
-        "knee_joint_angle_degrees",
-        left_knee_joint_angle_degrees,
-        right_knee_joint_angle_degrees
-      );
       // Coords for left side of the body
       let leftSide =
         results.poseLandmarks[11].visibility +
