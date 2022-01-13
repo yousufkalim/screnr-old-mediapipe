@@ -163,27 +163,25 @@ export const PoseComponent = () => {
     // CHECK IF RESULT CONTAINS POSE LANDMARKS
     if (results.poseLandmarks) {
       // With this function we will convert the landmarks array to an object with joint names
-      const updatedLandmarks = updateLandmarks(results.poseLandmarks);
-
-      console.log(calculateAngles.shoulder(updatedLandmarks));
+      const joints = updateLandmarks(results.poseLandmarks);
 
       // Coords for left side of the body
       let leftSide =
-        results.poseLandmarks[11].visibility +
-        results.poseLandmarks[13].visibility +
-        results.poseLandmarks[15].visibility +
-        results.poseLandmarks[23].visibility +
-        results.poseLandmarks[25].visibility +
-        results.poseLandmarks[27].visibility;
+        joints.shoulder.left_visibility +
+        joints.elbow.left_visibility +
+        joints.wrist.left_visibility +
+        joints.hip.left_visibility +
+        joints.knee.left_visibility +
+        joints.ankle.left_visibility;
 
       // Coords for right side of the body
       let rightSide =
-        results.poseLandmarks[12].visibility +
-        results.poseLandmarks[14].visibility +
-        results.poseLandmarks[16].visibility +
-        results.poseLandmarks[24].visibility +
-        results.poseLandmarks[26].visibility +
-        results.poseLandmarks[28].visibility;
+        joints.shoulder.right_visibility +
+        joints.elbow.right_visibility +
+        joints.wrist.right_visibility +
+        joints.hip.right_visibility +
+        joints.knee.right_visibility +
+        joints.ankle.right_visibility;
 
       // Probability calculation for left and right sides
       let leftSideProbability = leftSide / (leftSide + rightSide);
