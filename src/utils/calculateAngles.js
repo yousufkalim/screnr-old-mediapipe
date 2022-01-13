@@ -60,3 +60,203 @@ const calculateDegrees = (
   // Finally return the calculated angle
   return joint_angle_degrees;
 };
+
+/**
+ * These functions will calculate the angles that we needed
+ */
+class calculateAngles {
+  /**
+   * Calculating the knee angle
+   * @param {Object} landmarks
+   * @param {Boolean} small
+   * @param {Boolean} round
+   * @return {object} With left and right angles
+   */
+  knee(landmarks, small, round) {
+    return {
+      left: calculateDegrees(
+        landmarks.hip.left[0],
+        landmarks.hip.left[1],
+        landmarks.knee.left[0],
+        landmarks.knee.left[1],
+        landmarks.ankle.left[0],
+        landmarks.ankle.left[1],
+        small,
+        round
+      ),
+      right: calculateDegrees(
+        landmarks.hip.right[0],
+        landmarks.hip.right[1],
+        landmarks.knee.right[0],
+        landmarks.knee.right[1],
+        landmarks.ankle.right[0],
+        landmarks.ankle.right[1],
+        small,
+        round
+      ),
+    };
+  }
+
+  /**
+   * Calculating the shoulder angle
+   * @param {Object} landmarks
+   * @param {Boolean} small
+   * @param {Boolean} round
+   * @return {object} With left and right angles
+   */
+  shoulder(landmarks, small, round) {
+    return {
+      left: calculateDegrees(
+        landmarks.wrist.left[0],
+        landmarks.wrist.left[1],
+        landmarks.shoulder.left[0],
+        landmarks.shoulder.left[1],
+        landmarks.shoulder.left[0],
+        landmarks.shoulder.left[1] + (50 / 100) * landmarks.shoulder.left[1],
+        small,
+        round
+      ),
+      right: calculateDegrees(
+        landmarks.wrist.right[0],
+        landmarks.wrist.right[1],
+        landmarks.shoulder.right[0],
+        landmarks.shoulder.right[1],
+        landmarks.shoulder.right[0],
+        landmarks.shoulder.right[1] + (50 / 100) * landmarks.shoulder.right[1],
+        small,
+        round
+      ),
+    };
+  }
+
+  /**
+   * Calculating the spine angle
+   * @param {Object} landmarks
+   * @param {Boolean} small
+   * @param {Boolean} round
+   * @return {object} With left and right angles
+   */
+  spine(landmarks, small, round) {
+    return {
+      left: calculateDegrees(
+        landmarks.shoulder.left[0],
+        landmarks.shoulder.left[1],
+        landmarks.hip.left[0],
+        landmarks.hip.left[1],
+        landmarks.hip.left[0],
+        landmarks.hip.left[1] + (50 / 100) * landmarks.hip.left[1],
+        small,
+        round
+      ),
+      right: calculateDegrees(
+        landmarks.shoulder.right[0],
+        landmarks.shoulder.right[1],
+        landmarks.hip.right[0],
+        landmarks.hip.right[1],
+        landmarks.hip.right[0],
+        landmarks.hip.right[1] + (50 / 100) * landmarks.hip.right[1],
+        small,
+        round
+      ),
+    };
+  }
+
+  /**
+   * Calculating the shin angle
+   * @param {Object} landmarks
+   * @param {Boolean} small
+   * @param {Boolean} round
+   * @return {object} With left and right angles
+   */
+  shin(landmarks, small, round) {
+    return {
+      left: calculateDegrees(
+        landmarks.knee.left[0],
+        landmarks.knee.left[1],
+        landmarks.ankle.left[0],
+        landmarks.ankle.left[1],
+        landmarks.ankle.left[0],
+        landmarks.ankle.left[1] + (50 / 100) * landmarks.ankle.left[1],
+        small,
+        round
+      ),
+      right: calculateDegrees(
+        landmarks.knee.right[0],
+        landmarks.knee.right[1],
+        landmarks.ankle.right[0],
+        landmarks.ankle.right[1],
+        landmarks.ankle.right[0],
+        landmarks.ankle.right[1] + (50 / 100) * landmarks.ankle.right[1],
+        small,
+        round
+      ),
+    };
+  }
+
+  /**
+   * Calculating the hip angle
+   * @param {Object} landmarks
+   * @param {Boolean} small
+   * @param {Boolean} round
+   * @return {object} With left and right angles
+   */
+  hip(landmarks, small, round) {
+    return {
+      left: calculateDegrees(
+        landmarks.hip.left[0],
+        landmarks.hip.left[1] + (50 / 100) * landmarks.hip.left[1],
+        landmarks.hip.left[0],
+        landmarks.hip.left[1],
+        landmarks.knee.left[0],
+        landmarks.knee.left[1],
+        small,
+        round
+      ),
+      right: calculateDegrees(
+        landmarks.hip.right[0],
+        landmarks.hip.right[1] + (50 / 100) * landmarks.hip.right[1],
+        landmarks.hip.right[0],
+        landmarks.hip.right[1],
+        landmarks.knee.right[0],
+        landmarks.knee.right[1],
+        small,
+        round
+      ),
+    };
+  }
+
+  /**
+   * Calculating the OAH angle
+   * @param {Object} landmarks
+   * @param {Boolean} small
+   * @param {Boolean} round
+   * @return {object} With left and right angles
+   */
+  OAH(landmarks, small, round) {
+    return {
+      left: calculateDegrees(
+        landmarks.ankle.left[0],
+        landmarks.ankle.left[1] + (50 / 100) * landmarks.ankle.left[1],
+        landmarks.ankle.left[0],
+        landmarks.ankle.left[1],
+        landmarks.hip.left[0],
+        landmarks.hip.left[1],
+        small,
+        round
+      ),
+      right: calculateDegrees(
+        landmarks.ankle.right[0],
+        landmarks.ankle.right[1] + (50 / 100) * landmarks.ankle.right[1],
+        landmarks.ankle.right[0],
+        landmarks.ankle.right[1],
+        landmarks.hip.right[0],
+        landmarks.hip.right[1],
+        small,
+        round
+      ),
+    };
+  }
+}
+
+// Exports
+export default new calculateAngles();
