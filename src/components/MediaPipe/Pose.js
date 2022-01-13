@@ -6,6 +6,7 @@ import * as cam from "@mediapipe/camera_utils";
 import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { updateLandmarks } from "../../utils/updateLandmarks";
+import calculateAngles from "../../utils/calculateAngles";
 
 var camera = null;
 var showPoseLandmarks = true;
@@ -102,9 +103,6 @@ export const PoseComponent = () => {
 
     landmarks = results; // Setting the result to a landmarks variable to use when we call this function odd times
 
-    // With this function we will convert the landmarks array to an object with joint names
-    const updatedLandmarks = updateLandmarks(results.poseLandmarks);
-
     // const video = webcamRef.current.video;
     const videoWidth = 1280;
     // window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
@@ -164,39 +162,10 @@ export const PoseComponent = () => {
 
     // CHECK IF RESULT CONTAINS POSE LANDMARKS
     if (results.poseLandmarks) {
-      // Angle Detection
+      // With this function we will convert the landmarks array to an object with joint names
+      const updatedLandmarks = updateLandmarks(results.poseLandmarks);
 
-      const left_knee_joint_angle_radians =
-        Math.abs(
-          Math.atan2(
-            results.poseLandmarks[27].y - results.poseLandmarks[25].y,
-            results.poseLandmarks[27].x - results.poseLandmarks[25].x
-          )
-        ) -
-        Math.atan2(
-          results.poseLandmarks[23].y - results.poseLandmarks[25].y,
-          results.poseLandmarks[23].x - results.poseLandmarks[25].x
-        );
-      const left_knee_joint_angle_degrees = Math.round(
-        (left_knee_joint_angle_radians * 180.0) / Math.PI,
-        1
-      );
-
-      const right_knee_joint_angle_radians =
-        Math.abs(
-          Math.atan2(
-            results.poseLandmarks[28].y - results.poseLandmarks[26].y,
-            results.poseLandmarks[28].x - results.poseLandmarks[26].x
-          )
-        ) -
-        Math.atan2(
-          results.poseLandmarks[24].y - results.poseLandmarks[26].y,
-          results.poseLandmarks[24].x - results.poseLandmarks[26].x
-        );
-      const right_knee_joint_angle_degrees = Math.round(
-        (right_knee_joint_angle_radians * 180.0) / Math.PI,
-        1
-      );
+      console.log(calculateAngles.shoulder(updatedLandmarks));
 
       // Coords for left side of the body
       let leftSide =
