@@ -6,6 +6,13 @@
   width: 130px !important;
 }
 
+.toggle_smooth_btn {
+  position: absolute !important;
+  right: 280px !important;
+  top: 142px !important;
+  z-index: 10px !important;
+}
+
 .show_pose_side {
   text-align: right !important;
 }
