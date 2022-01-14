@@ -130,6 +130,38 @@ class calculateAngles {
   }
 
   /**
+   * Calculating the elbow angle
+   * @param {Object} landmarks
+   * @param {Boolean} small
+   * @param {Boolean} round
+   * @return {object} With left and right angles
+   */
+  elbow(landmarks, small, round) {
+    return {
+      left: calculateDegrees(
+        landmarks.shoulder.left[0],
+        landmarks.shoulder.left[1],
+        landmarks.elbow.left[0],
+        landmarks.elbow.left[1],
+        landmarks.wrist.left[0],
+        landmarks.wrist.left[1],
+        small,
+        round
+      ),
+      right: calculateDegrees(
+        landmarks.shoulder.right[0],
+        landmarks.shoulder.right[1],
+        landmarks.elbow.right[0],
+        landmarks.elbow.right[1],
+        landmarks.wrist.right[0],
+        landmarks.wrist.right[1],
+        small,
+        round
+      ),
+    };
+  }
+
+  /**
    * Calculating the spine angle
    * @param {Object} landmarks
    * @param {Boolean} small
