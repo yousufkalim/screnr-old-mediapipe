@@ -10,6 +10,7 @@ import calculateAngles from "../../utils/calculateAngles";
 
 var camera = null;
 var showPoseLandmarks = true;
+var showSmoothLandmarks = true;
 var landmarks = undefined; // initializing default landmarks variable to send in onResult function when loopCounter is odd
 var frames = 0;
 
@@ -146,7 +147,7 @@ export const PoseComponent = () => {
     }
 
     // after first 8 frames we have averaged coordinates, So now updating the poseLandmarks with averaged coordinates
-    if (smoothFrame.length > 0) {
+    if (smoothFrame.length > 0 && showSmoothLandmarks) {
       results.poseLandmarks = smoothFrame;
     }
 
@@ -364,6 +365,13 @@ export const PoseComponent = () => {
           variant="contained"
         >
           Show Pose
+        </Button>
+        <Button
+          className="toggle_smooth_btn"
+          onClick={(e) => (showSmoothLandmarks = !showSmoothLandmarks)}
+          variant="contained"
+        >
+          {showSmoothLandmarks ? "Turn smooth off" : "Turn smooth on"}
         </Button>
       </div>
 
