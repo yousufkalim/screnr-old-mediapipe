@@ -7,6 +7,7 @@ import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { updateLandmarks } from "../../utils/updateLandmarks";
 import calculateAngles from "../../utils/calculateAngles";
+import Sidebar from "../common/Sidebar";
 
 var camera = null;
 var showPoseLandmarks = true;
@@ -353,6 +354,8 @@ export const PoseComponent = () => {
             frameRate: { ideal: 30, max: 60 },
           }}
         />
+        {/* side menubar */}
+        <Sidebar />
         {/* Canvas to display th output */}
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
 
