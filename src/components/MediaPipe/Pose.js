@@ -27,6 +27,7 @@ export const PoseComponent = () => {
   const [fps, setFps] = useState(0);
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
+  const [angles, setAngles] = useState({});
   let [loopCounter, setLoopCounter] = useState(0);
   let [takeScreenshot, setTakeScreenshot] = useState(false);
   let [image, setImage] = useState();
@@ -219,6 +220,12 @@ export const PoseComponent = () => {
       // With this function we will convert the landmarks array to an object with joint names
       const joints = updateLandmarks(results.poseLandmarks);
 
+      setAngles({
+        shoulder: calculateAngles.shoulder(joints),
+        elbow: calculateAngles.elbow(joints),
+        knee: calculateAngles.knee(joints),
+      });
+
       // Coords for left side of the body
       let leftSide =
         joints.shoulder.left_visibility +
@@ -357,6 +364,23 @@ export const PoseComponent = () => {
           }}
         >
           Pose Side: <div style={{ color: "red" }}>{poseSide}</div>{" "}
+        </h4>
+
+        <h4
+          className="show_pose_side"
+          style={{
+            color: "green",
+          }}
+        >
+          <span>
+            Shoulder Angles: {angles.shoulder?.left} - {angles.shoulder?.right}
+          </span>
+          <span>
+            &nbsp; | Elbow Angles: {angles.elbow?.left} - {angles.elbow?.right}
+          </span>
+          <span>
+            &nbsp; | Knee Angles: {angles.knee?.left} - {angles.knee?.right}
+          </span>
         </h4>
 
         <Button
