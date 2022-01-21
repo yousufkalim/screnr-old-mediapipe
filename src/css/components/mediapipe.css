@@ -1,15 +1,15 @@
 .show_pose_btn {
   position: absolute !important;
-  right: 140px !important;
-  top: 170px !important;
+  right: 1.5% !important;
+  top: 12% !important;
   z-index: 10px !important;
   width: 130px !important;
 }
 
 .toggle_smooth_btn {
   position: absolute !important;
-  right: 280px !important;
-  top: 170px !important;
+  right: 1.5% !important;
+  top: 17% !important;
   z-index: 10px !important;
 }
 

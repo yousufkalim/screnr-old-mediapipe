@@ -255,11 +255,11 @@ export const PoseComponent = () => {
         rightSideProbability.toFixed(2) <= 0.52
       ) {
         setPoseSide(
-          "CENTER " +
-            "R: " +
-            rightSideProbability.toFixed(2) +
-            " L: " +
-            leftSideProbability.toFixed(2)
+          "CENTER - " +
+            "L: " +
+            leftSideProbability.toFixed(2) +
+            " - R: " +
+            rightSideProbability.toFixed(2)
         );
       }
       // If left side is ahead
@@ -268,11 +268,11 @@ export const PoseComponent = () => {
         rightSideProbability.toFixed(2) <= 0.52
       ) {
         setPoseSide(
-          "LEFT " +
-            "R: " +
-            rightSideProbability.toFixed(2) +
-            " L: " +
-            leftSideProbability.toFixed(2)
+          "LEFT - " +
+            "L: " +
+            leftSideProbability.toFixed(2) +
+            " - R: " +
+            rightSideProbability.toFixed(2)
         );
       }
       // If right side is ahead
@@ -281,11 +281,11 @@ export const PoseComponent = () => {
         leftSideProbability.toFixed(2) <= 0.52
       ) {
         setPoseSide(
-          "RIGHT " +
-            "R: " +
-            rightSideProbability.toFixed(2) +
-            " L: " +
-            leftSideProbability.toFixed(2)
+          "RIGHT - " +
+            "L: " +
+            leftSideProbability.toFixed(2) +
+            " - R: " +
+            rightSideProbability.toFixed(2)
         );
       }
 
@@ -355,36 +355,10 @@ export const PoseComponent = () => {
           }}
         />
         {/* side menubar */}
-        <Sidebar />
+        <Sidebar poseSide={poseSide} angles={angles} fps={fps} />
+
         {/* Canvas to display th output */}
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
-
-        {/* Button To show or hide pose */}
-        <h4
-          className="show_pose_side"
-          style={{
-            color: window.screen.width < 600 ? "black" : "white",
-          }}
-        >
-          Pose Side: <div style={{ color: "red" }}>{poseSide}</div>{" "}
-        </h4>
-
-        <h4
-          className="show_pose_side"
-          style={{
-            color: "green",
-          }}
-        >
-          <span>
-            Shoulder Angles: {angles.shoulder?.left} - {angles.shoulder?.right}
-          </span>
-          <span>
-            &nbsp; | Elbow Angles: {angles.elbow?.left} - {angles.elbow?.right}
-          </span>
-          <span>
-            &nbsp; | Knee Angles: {angles.knee?.left} - {angles.knee?.right}
-          </span>
-        </h4>
 
         <Button
           className="show_pose_btn"
@@ -393,6 +367,7 @@ export const PoseComponent = () => {
         >
           Show Pose
         </Button>
+
         <Button
           className="toggle_smooth_btn"
           onClick={(e) => (showSmoothLandmarks = !showSmoothLandmarks)}
@@ -402,16 +377,6 @@ export const PoseComponent = () => {
         </Button>
       </div>
 
-      {/* Showing the frames per second */}
-      <h1
-        className="show_fps"
-        style={{
-          textAlign: "right",
-          color: window.screen.width < 600 ? "black" : "white",
-        }}
-      >
-        {fps} FPS
-      </h1>
       {image && (
         <img
           style={{
