@@ -26,8 +26,10 @@ const calculateDegrees = (
   round = true
 ) => {
   // Making the radians from joint angles
-  const joint_angle_radians =
-    Math.abs(Math.atan2(y3 - y2, x3 - x2)) - Math.atan2(y1 - y2, x1 - x2);
+  const A = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  const B = Math.sqrt(Math.pow(x2 - x3, 2) + Math.pow(y2 - y3, 2));
+  const C = Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2));
+  const joint_angle_radians = Math.acos((B * B + A * A - C * C) / (2 * B * A));
 
   // Making the degree from radians angle
   let joint_angle_degrees = Math.round(
