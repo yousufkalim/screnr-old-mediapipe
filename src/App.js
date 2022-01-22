@@ -30,20 +30,7 @@ function App() {
         <StoreProvider>
           <Switch>
             {/* main routes */}
-            <Route
-              path="/patient"
-              render={(props) => <PatientLayout {...props} />}
-            />
-            <Route
-              path="/doctor"
-              render={(props) => <DoctorLayout {...props} />}
-            />
-            <Route
-              path="/home"
-              render={(props) => <LandingLayout {...props} />}
-            />
-
-            <Redirect from="/" to="/home" />
+            <Route path="/" render={(props) => <PatientLayout {...props} />} />
           </Switch>
         </StoreProvider>
       </BrowserRouter>
