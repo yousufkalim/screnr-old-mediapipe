@@ -10,14 +10,17 @@
 }
 .head_div {
   margin-top: 5px !important;
-  background-color: #838788 !important;
+  background-color: rgba(131, 135, 136, 0.6) !important;
   width: 100% !important;
   border: 2px solid white !important;
   border-radius: 10px !important;
 }
-.head_text {
+.head_div h4 {
+  color: white;
+}
+.head_div span {
   padding-top: 20px !important;
   padding-bottom: 20px !important;
-
+  font-size: 14px;
   color: white !important;
 }
