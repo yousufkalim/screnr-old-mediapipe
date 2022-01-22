@@ -308,7 +308,7 @@ export const PoseComponent = () => {
           canvasCtx,
           results.poseLandmarks,
           POSE.POSE_CONNECTIONS,
-          { color: "white", lineWidth: 1 }
+          { color: "white", lineWidth: 4 }
         );
         // FACE INLINE POSE POSITIONS
         drawLandmarks(
@@ -318,9 +318,9 @@ export const PoseComponent = () => {
           ),
           {
             visibilityMin: 0.65,
-            color: "transparent",
-            fillColor: "transparent",
-            lineWidth: 1,
+            color: "white",
+            fillColor: "orange",
+            lineWidth: 3,
           }
         );
         drawLandmarks(
@@ -330,9 +330,9 @@ export const PoseComponent = () => {
           ),
           {
             visibilityMin: 0.65,
-            color: "transparent",
-            fillColor: "transparent",
-            lineWidth: 1,
+            color: "white",
+            fillColor: "lightblue",
+            lineWidth: 3,
           }
         );
       }
