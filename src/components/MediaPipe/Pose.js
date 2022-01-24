@@ -16,8 +16,15 @@ var landmarks = undefined; // initializing default landmarks variable to send in
 var frames = 0;
 
 // Smooth landmarks
-var frameSets = [];
+var frameSets = new Array();
 var smoothFrame = new Array();
+
+// Phase detection
+var phase = 0;
+var phaseCount = { one: 0, two: 0 };
+var setsCount = 0;
+var minAngle = 110;
+var maxAngle = 110;
 
 // Pose component
 export const PoseComponent = () => {
@@ -336,10 +343,33 @@ export const PoseComponent = () => {
           }
         );
       }
+
+      // Checking phase and counting the reps
+      checkPhase(calculateAngles.elbow(joints));
     }
 
     canvasCtx.restore();
   }
+
+  // Function to check phase by checking knee angle for over head squat
+  const checkPhase = (kneeAngle) => {
+    let { left, right } = kneeAngle;
+
+    // If knee angle is above 110 then it's phase one otherwise it's phase 2
+    if (left > 110 && right > 110) {
+      // Getting max angle
+      if (right > maxAngle && left > maxAngle) {
+        maxAngle = right;
+      }
+      phase = 1; // Phase update
+    } else {
+      // Getting min angle
+      if (right < minAngle && right < minAngle) {
+        minAngle = right;
+      }
+      phase = 2; // Phase update
+    }
+  };
 
   return (
     <center>
@@ -355,7 +385,12 @@ export const PoseComponent = () => {
           }}
         />
         {/* side menubar */}
-        <Sidebar poseSide={poseSide} angles={angles} fps={fps} />
+        <Sidebar
+          poseSide={poseSide}
+          angles={angles}
+          fps={fps}
+          minAngle={minAngle}
+        />
 
         {/* Canvas to display th output */}
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
