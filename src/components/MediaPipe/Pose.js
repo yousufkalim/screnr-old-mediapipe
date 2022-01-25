@@ -7,6 +7,7 @@ import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { updateLandmarks } from "../../utils/updateLandmarks";
 import calculateAngles from "../../utils/calculateAngles";
+import checkRules from "../../utils/checkRules";
 import Sidebar from "../common/Sidebar";
 
 var camera = null;
@@ -16,8 +17,14 @@ var landmarks = undefined; // initializing default landmarks variable to send in
 var frames = 0;
 
 // Smooth landmarks
-var frameSets = [];
+var frameSets = new Array();
 var smoothFrame = new Array();
+
+// Phase detection
+// var phase = 0;
+var minAngle = 100;
+var maxAngle = 100;
+var reps = new Array();
 
 // Pose component
 export const PoseComponent = () => {
@@ -29,9 +36,11 @@ export const PoseComponent = () => {
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
   const [angles, setAngles] = useState({});
+  let [message, setMessage] = useState("");
   let [loopCounter, setLoopCounter] = useState(0);
   let [takeScreenshot, setTakeScreenshot] = useState(false);
   let [image, setImage] = useState();
+  let [phase, setPhase] = useState(0);
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -102,6 +111,16 @@ export const PoseComponent = () => {
   useEffect(() => {
     setCurrentWidth(window.screen.width);
   }, [window.screen.width]);
+
+  // Creating reps with rep details
+  useEffect(() => {
+    if (phase === 1 && minAngle < 100) {
+      let repsCount = reps.length + 1;
+      reps.push({ minAngle, maxAngle, repsCount });
+      minAngle = 100;
+      maxAngle = 100;
+    }
+  }, [phase]); // This code runs each time when phase update
 
   const onResults = (results) => {
     // FPS --> Incrementing frames variable to calculate the frames after one second, because this onResult function runs on every frame to draw landmarks
@@ -221,11 +240,17 @@ export const PoseComponent = () => {
       // With this function we will convert the landmarks array to an object with joint names
       const joints = updateLandmarks(results.poseLandmarks);
 
-      setAngles({
+      let calculatedAngles = {
         shoulder: calculateAngles.shoulder(joints),
         elbow: calculateAngles.elbow(joints),
         knee: calculateAngles.knee(joints),
-      });
+        spine: calculateAngles.spine(joints),
+        shin: calculateAngles.shin(joints),
+        OAH: calculateAngles.OAH(joints),
+        hip: calculateAngles.hip(joints),
+      };
+
+      setAngles(calculatedAngles);
 
       // Coords for left side of the body
       let leftSide =
@@ -261,6 +286,8 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
+        // Validate Rules
+        setMessage(checkRules(phase, calculatedAngles, "center"));
       }
       // If left side is ahead
       else if (
@@ -274,6 +301,9 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
+
+        // Validate Rules
+        setMessage(checkRules(phase, calculatedAngles, "left"));
       }
       // If right side is ahead
       else if (
@@ -287,6 +317,9 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
+
+        // Validate Rules
+        setMessage(checkRules(phase, calculatedAngles, "right"));
       }
 
       // taking screenshot when hand is above nose
@@ -336,10 +369,33 @@ export const PoseComponent = () => {
           }
         );
       }
+
+      // Checking phase and counting the reps
+      checkPhase(calculateAngles.knee(joints));
     }
 
     canvasCtx.restore();
   }
+
+  // Function to check phase by checking knee angle for over head squat
+  const checkPhase = (kneeAngle) => {
+    let { left, right } = kneeAngle;
+
+    // If knee angle is above 110 then it's phase one otherwise it's phase 2
+    if (left > 100 && right > 100) {
+      // Getting max angle
+      if (right > maxAngle && left > maxAngle) {
+        maxAngle = right;
+      }
+      setPhase(1); // Phase update
+    } else if (left <= 100 && right <= 100 && left >= 33 && right >= 33) {
+      // Getting min angle
+      if (right < minAngle && left < minAngle) {
+        minAngle = right;
+      }
+      setPhase(2); // Phase update
+    }
+  };
 
   return (
     <center>
@@ -355,7 +411,14 @@ export const PoseComponent = () => {
           }}
         />
         {/* side menubar */}
-        <Sidebar poseSide={poseSide} angles={angles} fps={fps} />
+        <Sidebar
+          poseSide={poseSide}
+          angles={angles}
+          fps={fps}
+          reps={reps}
+          phase={phase}
+          message={message}
+        />
 
         {/* Canvas to display th output */}
         <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
