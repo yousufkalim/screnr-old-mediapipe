@@ -20,11 +20,10 @@ var frameSets = new Array();
 var smoothFrame = new Array();
 
 // Phase detection
-var phase = 0;
-var phaseCount = { one: 0, two: 0 };
-var setsCount = 0;
-var minAngle = 110;
-var maxAngle = 110;
+// var phase = 0;
+var minAngle = 100;
+var maxAngle = 100;
+var reps = new Array();
 
 // Pose component
 export const PoseComponent = () => {
@@ -39,6 +38,7 @@ export const PoseComponent = () => {
   let [loopCounter, setLoopCounter] = useState(0);
   let [takeScreenshot, setTakeScreenshot] = useState(false);
   let [image, setImage] = useState();
+  let [phase, setPhase] = useState(0);
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -109,6 +109,16 @@ export const PoseComponent = () => {
   useEffect(() => {
     setCurrentWidth(window.screen.width);
   }, [window.screen.width]);
+
+  // Creating reps with rep details
+  useEffect(() => {
+    if (phase === 1 && minAngle < 100) {
+      let repsCount = reps.length + 1;
+      reps.push({ minAngle, maxAngle, repsCount });
+      minAngle = 100;
+      maxAngle = 100;
+    }
+  }, [phase]); // This code runs each time when phase update
 
   const onResults = (results) => {
     // FPS --> Incrementing frames variable to calculate the frames after one second, because this onResult function runs on every frame to draw landmarks
@@ -345,7 +355,7 @@ export const PoseComponent = () => {
       }
 
       // Checking phase and counting the reps
-      checkPhase(calculateAngles.elbow(joints));
+      checkPhase(calculateAngles.knee(joints));
     }
 
     canvasCtx.restore();
@@ -356,18 +366,18 @@ export const PoseComponent = () => {
     let { left, right } = kneeAngle;
 
     // If knee angle is above 110 then it's phase one otherwise it's phase 2
-    if (left > 110 && right > 110) {
+    if (left > 100 && right > 100) {
       // Getting max angle
       if (right > maxAngle && left > maxAngle) {
         maxAngle = right;
       }
-      phase = 1; // Phase update
-    } else {
+      setPhase(1); // Phase update
+    } else if (left <= 100 && right <= 100 && left >= 33 && right >= 33) {
       // Getting min angle
-      if (right < minAngle && right < minAngle) {
+      if (right < minAngle && left < minAngle) {
         minAngle = right;
       }
-      phase = 2; // Phase update
+      setPhase(2); // Phase update
     }
   };
 
@@ -389,7 +399,8 @@ export const PoseComponent = () => {
           poseSide={poseSide}
           angles={angles}
           fps={fps}
-          minAngle={minAngle}
+          reps={reps}
+          phase={phase}
         />
 
         {/* Canvas to display th output */}

@@ -1,6 +1,7 @@
 import React from "react";
 
-const Sidebar = ({ poseSide, angles, fps }) => {
+const Sidebar = ({ poseSide, angles, fps, reps, phase }) => {
+  let rep = reps[reps.length - 1];
   return (
     <div className="main_div">
       <div className="head_div">
@@ -27,6 +28,15 @@ const Sidebar = ({ poseSide, angles, fps }) => {
         <span>
           L: {angles.knee?.left} - R: {angles.knee?.right}
         </span>
+      </div>
+      <div className="head_div">
+        <div>
+          <h4>Rep Details</h4>
+          <span>
+            Phase: {phase} - Min Angle: {rep?.minAngle} - Max Angle{" "}
+            {rep?.maxAngle}
+          </span>
+        </div>
       </div>
     </div>
   );
