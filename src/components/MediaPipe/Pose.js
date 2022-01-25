@@ -7,6 +7,7 @@ import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { updateLandmarks } from "../../utils/updateLandmarks";
 import calculateAngles from "../../utils/calculateAngles";
+import checkRules from "../../utils/checkRules";
 import Sidebar from "../common/Sidebar";
 
 var camera = null;
@@ -35,6 +36,7 @@ export const PoseComponent = () => {
   const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
   const [angles, setAngles] = useState({});
+  let [message, setMessage] = useState("");
   let [loopCounter, setLoopCounter] = useState(0);
   let [takeScreenshot, setTakeScreenshot] = useState(false);
   let [image, setImage] = useState();
@@ -238,11 +240,17 @@ export const PoseComponent = () => {
       // With this function we will convert the landmarks array to an object with joint names
       const joints = updateLandmarks(results.poseLandmarks);
 
-      setAngles({
+      let calculatedAngles = {
         shoulder: calculateAngles.shoulder(joints),
         elbow: calculateAngles.elbow(joints),
         knee: calculateAngles.knee(joints),
-      });
+        spine: calculateAngles.spine(joints),
+        shin: calculateAngles.shin(joints),
+        OAH: calculateAngles.OAH(joints),
+        hip: calculateAngles.hip(joints),
+      };
+
+      setAngles(calculatedAngles);
 
       // Coords for left side of the body
       let leftSide =
@@ -278,6 +286,8 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
+        // Validate Rules
+        setMessage(checkRules(phase, calculatedAngles, "center"));
       }
       // If left side is ahead
       else if (
@@ -291,6 +301,9 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
+
+        // Validate Rules
+        setMessage(checkRules(phase, calculatedAngles, "left"));
       }
       // If right side is ahead
       else if (
@@ -304,6 +317,9 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
+
+        // Validate Rules
+        setMessage(checkRules(phase, calculatedAngles, "right"));
       }
 
       // taking screenshot when hand is above nose
@@ -401,6 +417,7 @@ export const PoseComponent = () => {
           fps={fps}
           reps={reps}
           phase={phase}
+          message={message}
         />
 
         {/* Canvas to display th output */}
