@@ -21,7 +21,7 @@ var frameSets = new Array();
 var smoothFrame = new Array();
 
 // Phase detection
-// var phase = 0;
+var currentPhase = 0;
 var minAngle = 100;
 var maxAngle = 100;
 var reps = new Array();
@@ -40,7 +40,7 @@ export const PoseComponent = () => {
   let [loopCounter, setLoopCounter] = useState(0);
   let [takeScreenshot, setTakeScreenshot] = useState(false);
   let [image, setImage] = useState();
-  let [phase, setPhase] = useState(0);
+  let [phase, setPhase] = useState(0); // We will update this state only to track in useEffect, Cz useEffect cannot track a variable, And we are not gonna use this in rules validation, We will use currentPhase variable there.
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -270,6 +270,11 @@ export const PoseComponent = () => {
         joints.knee.right_visibility +
         joints.ankle.right_visibility;
 
+      // Validate Rules
+      setMessage(
+        checkRules(currentPhase, calculatedAngles, leftSide, rightSide)
+      );
+
       // Probability calculation for left and right sides
       let leftSideProbability = leftSide / (leftSide + rightSide);
       let rightSideProbability = rightSide / (leftSide + rightSide);
@@ -286,8 +291,6 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
-        // Validate Rules
-        setMessage(checkRules(phase, calculatedAngles, "center"));
       }
       // If left side is ahead
       else if (
@@ -301,9 +304,6 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
-
-        // Validate Rules
-        setMessage(checkRules(phase, calculatedAngles, "left"));
       }
       // If right side is ahead
       else if (
@@ -317,9 +317,6 @@ export const PoseComponent = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
-
-        // Validate Rules
-        setMessage(checkRules(phase, calculatedAngles, "right"));
       }
 
       // taking screenshot when hand is above nose
@@ -387,13 +384,15 @@ export const PoseComponent = () => {
       if (right > maxAngle && left > maxAngle) {
         maxAngle = right;
       }
-      setPhase(1); // Phase update
+      currentPhase = 1; // Updating currentPhase var to use in rules validation
+      setPhase(1); // Updating phase state to track in useEffect
     } else if (left <= 100 && right <= 100 && left >= 33 && right >= 33) {
       // Getting min angle
       if (right < minAngle && left < minAngle) {
         minAngle = right;
       }
-      setPhase(2); // Phase update
+      currentPhase = 2; // Updating currentPhase var to use in rules validation
+      setPhase(2); // Updating phase state to track in useEffect
     }
   };
 
