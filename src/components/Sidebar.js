@@ -65,7 +65,7 @@ const Sidebar = ({ poseSide, angles, fps, reps, phase, message }) => {
       <div className="head_div">
         <div>
           <h4>Message</h4>
-          <span>{message}</span>
+          <span style={{ color: "rgb(250, 0, 0)" }}>{message}</span>
         </div>
       </div>
     </div>

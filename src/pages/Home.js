@@ -372,14 +372,14 @@ export const Home = () => {
     let { left, right } = kneeAngle;
 
     // If knee angle is above 110 then it's phase one otherwise it's phase 2
-    if (left > 100 && right > 100) {
+    if (left > 115 || right > 115) {
       // Getting max angle
       if (right > maxAngle && left > maxAngle) {
         maxAngle = right;
       }
       currentPhase = 1; // Updating currentPhase var to use in rules validation
       setPhase(1); // Updating phase state to track in useEffect
-    } else if (left <= 100 && right <= 100 && left >= 33 && right >= 33) {
+    } else if ((left < 100 || right < 100) && (left >= 25 || right >= 25)) {
       // Getting min angle
       if (right < minAngle && left < minAngle) {
         minAngle = right;
