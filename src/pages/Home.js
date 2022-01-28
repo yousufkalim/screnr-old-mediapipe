@@ -394,18 +394,8 @@ export const Home = () => {
 
   return (
     <center>
-      <div className="webCan">
-        {/* React Webcam component */}
-        <Webcam
-          className="webcam_main"
-          ref={webcamRef}
-          videoConstraints={{
-            height: height,
-            width: width,
-            frameRate: { ideal: 30, max: 60 },
-          }}
-        />
-        {/* side menubar */}
+      <div className="webcam">
+        {/* Sidebar for statistics*/}
         <Sidebar
           poseSide={poseSide}
           angles={angles}
@@ -415,24 +405,44 @@ export const Home = () => {
           message={message}
         />
 
-        {/* Canvas to display th output */}
-        <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
+        <div className="webcam-container">
+          {/* React Webcam component */}
+          <Webcam
+            className="webcam_main"
+            ref={webcamRef}
+            videoConstraints={{
+              height: height,
+              width: width,
+              frameRate: { ideal: 30, max: 60 },
+            }}
+          />
 
-        <Button
-          className="show_pose_btn"
-          onClick={(e) => (showPoseLandmarks = !showPoseLandmarks)}
-          variant="contained"
-        >
-          Show Pose
-        </Button>
+          {/* Canvas to display th output */}
+          <canvas
+            id="webCan"
+            ref={canvasRef}
+            className="output_canvas"
+          ></canvas>
+        </div>
 
-        <Button
-          className="toggle_smooth_btn"
-          onClick={(e) => (showSmoothLandmarks = !showSmoothLandmarks)}
-          variant="contained"
-        >
-          {showSmoothLandmarks ? "Turn smooth off" : "Turn smooth on"}
-        </Button>
+        {/* Control Buttons */}
+        <div className="btn-container">
+          <Button
+            className="show_pose_btn"
+            onClick={(e) => (showPoseLandmarks = !showPoseLandmarks)}
+            variant="contained"
+          >
+            Show Pose
+          </Button>
+
+          <Button
+            className="toggle_smooth_btn"
+            onClick={(e) => (showSmoothLandmarks = !showSmoothLandmarks)}
+            variant="contained"
+          >
+            {showSmoothLandmarks ? "Smooth off" : "Smooth on"}
+          </Button>
+        </div>
       </div>
 
       {image && (

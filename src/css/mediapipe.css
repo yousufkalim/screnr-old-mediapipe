@@ -1,62 +1,29 @@
-.show_pose_btn {
-  position: absolute !important;
-  right: 1.5% !important;
-  top: 12% !important;
-  z-index: 10px !important;
-  width: 130px !important;
-}
-
-.toggle_smooth_btn {
-  position: absolute !important;
-  right: 1.5% !important;
-  top: 17% !important;
-  z-index: 10px !important;
-}
-
-.show_pose_side {
-  text-align: right !important;
+.webcam {
+  position: relative;
 }
 
 .output_canvas {
-  position: absolute !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  right: 10px !important;
-  text-align: center !important;
-  z-index: -1 !important;
-  /* width: 80% !important;
-  height: 86% !important; */
+  margin: auto;
+  object-fit: contain;
+  width: 100%;
 }
+
 .webcam_main {
-  /* position: absolute !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  right: 10px !important;
-  text-align: center !important;
-  z-index: -1 !important;
-  width: 80% !important;
-  height: 86% !important; */
   display: none;
 }
 
-@media only screen and (max-width: 600px) {
-  .show_pose_btn {
-    top: 90vh !important;
-  }
+.btn-container {
+  position: absolute;
+  right: 1.5%;
+  top: 5%;
+  width: 150px;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 
-  .show_pose_side {
-    top: 650px !important;
-  }
-  .output_canvas {
-    width: 100vw !important;
-    height: 100vh !important;
-    top: 0 !important;
-    left: 0px !important;
-  }
-  .webcam_main {
-    width: 100vw !important;
-    height: 100vh !important;
-    top: 0 !important;
-    left: 0px !important;
-  }
+.btn-container button {
+  margin-bottom: 10px;
 }
