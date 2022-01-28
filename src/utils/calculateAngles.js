@@ -25,6 +25,14 @@ const calculateDegrees = (
   small = true,
   round = true
 ) => {
+  // Converting normalized landmarks to pixels
+  x1 = x1 * window.camWidth;
+  y1 = y1 * window.camHeight;
+  x2 = x2 * window.camWidth;
+  y2 = y2 * window.camHeight;
+  x3 = x3 * window.camWidth;
+  y3 = y3 * window.camHeight;
+
   // Making the radians from joint angles
   const A = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
   const B = Math.sqrt(Math.pow(x2 - x3, 2) + Math.pow(y2 - y3, 2));

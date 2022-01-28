@@ -5,10 +5,11 @@ import { Pose } from "@mediapipe/pose";
 import * as cam from "@mediapipe/camera_utils";
 import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { updateLandmarks } from "../../utils/updateLandmarks";
-import calculateAngles from "../../utils/calculateAngles";
-import checkRules from "../../utils/checkRules";
-import Sidebar from "../common/Sidebar";
+import { updateLandmarks } from "../utils/updateLandmarks";
+import calculateAngles from "../utils/calculateAngles";
+import checkRules from "../utils/checkRules";
+import Sidebar from "../components/Sidebar";
+import Loader from "../components/Loader";
 
 var camera = null;
 var showPoseLandmarks = true;
@@ -26,14 +27,17 @@ var minAngle = 100;
 var maxAngle = 100;
 var reps = new Array();
 
+// Setting default cam width
+window.camWidth = 1280;
+window.camHeight = 720;
+
 // Pose component
-export const PoseComponent = () => {
+export const Home = () => {
   //Initializing
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   let activeEffect = "mask";
   const [fps, setFps] = useState(0);
-  const [currentWidth, setCurrentWidth] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
   const [angles, setAngles] = useState({});
   let [message, setMessage] = useState("");
@@ -76,8 +80,8 @@ export const PoseComponent = () => {
             await pose.send({ image: webcamRef.current.video });
           }
         },
-        width: 1280,
-        height: 720,
+        width: window.camWidth,
+        height: window.camHeight,
       });
       camera.start();
     }
@@ -106,11 +110,6 @@ export const PoseComponent = () => {
       onResults(landmarks);
     }
   }, [loopCounter]); // This code should run on every increment of loopCounter
-
-  // Getting current width if width changes
-  useEffect(() => {
-    setCurrentWidth(window.screen.width);
-  }, [window.screen.width]);
 
   // Creating reps with rep details
   useEffect(() => {
@@ -178,15 +177,9 @@ export const PoseComponent = () => {
 
   // Results received from the pose component
   function drawOnCanvas(results) {
-    // const video = webcamRef.current.video;
-    const videoWidth = 1280;
-    // window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
-    const videoHeight = 720;
-    // window.screen.width < 600 ? 720 : webcamRef.current.video.videoHeight;
-
-    // Set canvas width
-    canvasRef.current.width = videoWidth;
-    canvasRef.current.height = videoHeight;
+    // Setting canvas dimensions
+    canvasRef.current.width = window.camWidth;
+    canvasRef.current.height = window.camHeight;
 
     const canvasElement = canvasRef.current;
     const canvasCtx = canvasElement.getContext("2d");
@@ -398,18 +391,8 @@ export const PoseComponent = () => {
 
   return (
     <center>
-      <div className="webCan">
-        {/* React Webcam component */}
-        <Webcam
-          className="webcam_main"
-          ref={webcamRef}
-          videoConstraints={{
-            height: 720,
-            width: 1280,
-            frameRate: { ideal: 30, max: 60 },
-          }}
-        />
-        {/* side menubar */}
+      <div className="webcam">
+        {/* Sidebar for statistics*/}
         <Sidebar
           poseSide={poseSide}
           angles={angles}
@@ -419,24 +402,48 @@ export const PoseComponent = () => {
           message={message}
         />
 
-        {/* Canvas to display th output */}
-        <canvas id="webCan" ref={canvasRef} className="output_canvas"></canvas>
+        <div className="webcam-container">
+          {/* React Webcam component */}
+          <Webcam
+            className="webcam_main"
+            ref={webcamRef}
+            videoConstraints={{
+              height: window.camHeight,
+              width: window.camWidth,
+              frameRate: { ideal: 30, max: 60 },
+            }}
+          />
 
-        <Button
-          className="show_pose_btn"
-          onClick={(e) => (showPoseLandmarks = !showPoseLandmarks)}
-          variant="contained"
-        >
-          Show Pose
-        </Button>
+          {/* Canvas to display th output */}
+          {loopCounter === 0 ? (
+            <Loader />
+          ) : (
+            <canvas
+              id="webCan"
+              ref={canvasRef}
+              className="output_canvas"
+            ></canvas>
+          )}
+        </div>
 
-        <Button
-          className="toggle_smooth_btn"
-          onClick={(e) => (showSmoothLandmarks = !showSmoothLandmarks)}
-          variant="contained"
-        >
-          {showSmoothLandmarks ? "Turn smooth off" : "Turn smooth on"}
-        </Button>
+        {/* Control Buttons */}
+        <div className="btn-container">
+          <Button
+            className="show_pose_btn"
+            onClick={(e) => (showPoseLandmarks = !showPoseLandmarks)}
+            variant="contained"
+          >
+            Show Pose
+          </Button>
+
+          <Button
+            className="toggle_smooth_btn"
+            onClick={(e) => (showSmoothLandmarks = !showSmoothLandmarks)}
+            variant="contained"
+          >
+            {showSmoothLandmarks ? "Smooth off" : "Smooth on"}
+          </Button>
+        </div>
       </div>
 
       {image && (
