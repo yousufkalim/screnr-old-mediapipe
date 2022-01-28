@@ -5,10 +5,10 @@ import { Pose } from "@mediapipe/pose";
 import * as cam from "@mediapipe/camera_utils";
 import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { updateLandmarks } from "../../utils/updateLandmarks";
-import calculateAngles from "../../utils/calculateAngles";
-import checkRules from "../../utils/checkRules";
-import Sidebar from "../common/Sidebar";
+import { updateLandmarks } from "../utils/updateLandmarks";
+import calculateAngles from "../utils/calculateAngles";
+import checkRules from "../utils/checkRules";
+import Sidebar from "../components/Sidebar";
 
 var camera = null;
 var showPoseLandmarks = true;
@@ -27,13 +27,14 @@ var maxAngle = 100;
 var reps = new Array();
 
 // Pose component
-export const PoseComponent = () => {
+export const Home = () => {
   //Initializing
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   let activeEffect = "mask";
   const [fps, setFps] = useState(0);
-  const [currentWidth, setCurrentWidth] = useState(0);
+  const [width] = useState(1280);
+  const [height] = useState(720);
   const [poseSide, setPoseSide] = useState("BACK");
   const [angles, setAngles] = useState({});
   let [message, setMessage] = useState("");
@@ -76,8 +77,8 @@ export const PoseComponent = () => {
             await pose.send({ image: webcamRef.current.video });
           }
         },
-        width: 1280,
-        height: 720,
+        width: width,
+        height: height,
       });
       camera.start();
     }
@@ -106,11 +107,6 @@ export const PoseComponent = () => {
       onResults(landmarks);
     }
   }, [loopCounter]); // This code should run on every increment of loopCounter
-
-  // Getting current width if width changes
-  useEffect(() => {
-    setCurrentWidth(window.screen.width);
-  }, [window.screen.width]);
 
   // Creating reps with rep details
   useEffect(() => {
@@ -179,9 +175,9 @@ export const PoseComponent = () => {
   // Results received from the pose component
   function drawOnCanvas(results) {
     // const video = webcamRef.current.video;
-    const videoWidth = 1280;
+    const videoWidth = width;
     // window.screen.width < 600 ? 1280 : webcamRef.current.video.videoWidth;
-    const videoHeight = 720;
+    const videoHeight = height;
     // window.screen.width < 600 ? 720 : webcamRef.current.video.videoHeight;
 
     // Set canvas width
@@ -404,8 +400,8 @@ export const PoseComponent = () => {
           className="webcam_main"
           ref={webcamRef}
           videoConstraints={{
-            height: 720,
-            width: 1280,
+            height: height,
+            width: width,
             frameRate: { ideal: 30, max: 60 },
           }}
         />

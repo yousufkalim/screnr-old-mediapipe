@@ -1,7 +1,6 @@
 /* Importing all CSS files */
-@import url("./home/index.css");
-@import url("./Doctor/index.css");
-@import url("./components/index.css");
+@import url("./mediapipe.css");
+@import url("./sidebar.css");
 
 /* Defaults */
 * {
