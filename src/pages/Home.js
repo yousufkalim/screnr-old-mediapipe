@@ -9,6 +9,7 @@ import { updateLandmarks } from "../utils/updateLandmarks";
 import calculateAngles from "../utils/calculateAngles";
 import checkRules from "../utils/checkRules";
 import Sidebar from "../components/Sidebar";
+import Loader from "../components/Loader";
 
 var camera = null;
 var showPoseLandmarks = true;
@@ -414,11 +415,15 @@ export const Home = () => {
           />
 
           {/* Canvas to display th output */}
-          <canvas
-            id="webCan"
-            ref={canvasRef}
-            className="output_canvas"
-          ></canvas>
+          {loopCounter === 0 ? (
+            <Loader />
+          ) : (
+            <canvas
+              id="webCan"
+              ref={canvasRef}
+              className="output_canvas"
+            ></canvas>
+          )}
         </div>
 
         {/* Control Buttons */}
