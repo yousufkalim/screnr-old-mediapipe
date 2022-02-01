@@ -21,15 +21,15 @@ const checkRules = (phase, angles, leftSide, rightSide) => {
   if (phase === 1 && shoulder[visibility] < 170) {
     return "Keep arms over ears";
   }
-  // // Rule 2:  If phase=1 and shin_angle<175 and OAH_angle<195 then display: "stay on heels"
-  // else if (phase === 1 && shin[visibility] < 175 && OAH[visibility] < 195) {
-  //   return "Stay on heels";
-  // }
-  // //  Rule 3:  If phase=1 and  shin_angle<150 and OAH_angle>=185 then display: "do not let knees pass the toes"
-  // else if (phase === 1 && shin[visibility] < 150 && OAH[visibility] >= 185) {
-  //   return "Do not let knees pass the toes";
-  // }
-  // // Rule 4:  If phase=2 and hip_angle < 85, display: "sit hips lower"
+  // Rule 2:  If phase=1 and shin_angle<175 and OAH_angle<195 then display: "stay on heels"
+  else if (phase === 1 && shin[visibility] < 175 && OAH[visibility] < 195) {
+    return "Stay on heels";
+  }
+  //  Rule 3:  If phase=1 and  shin_angle<150 and OAH_angle>=185 then display: "do not let knees pass the toes"
+  else if (phase === 1 && shin[visibility] < 150 && OAH[visibility] >= 185) {
+    return "Do not let knees pass the toes";
+  }
+  // Rule 4:  If phase=2 and hip_angle < 85, display: "sit hips lower"
   else if (phase === 2 && hip[visibility] < 85) {
     return "Sit hips lower";
   }
