@@ -133,6 +133,11 @@ export const Home = () => {
 
     // Pushing frame at the end of frameSet array
     if (results.poseLandmarks) {
+      // Disabling face landmarks by setting it's visibility to zero
+      results.poseLandmarks = results.poseLandmarks.map((a, i) =>
+        i < 11 ? { ...a, visibility: 0.0 } : a
+      );
+
       frameSets.push(results.poseLandmarks);
     }
 
