@@ -1,6 +1,7 @@
 /* Importing all CSS files */
 @import url("./mediapipe.css");
 @import url("./sidebar.css");
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
 
 /* Defaults */
 * {

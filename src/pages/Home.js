@@ -11,6 +11,10 @@ import checkRules from "../utils/checkRules";
 import Sidebar from "../components/Sidebar";
 import Loader from "../components/Loader";
 
+// Connections
+import left_connections from "../assets/connections/left_connections.json";
+import right_connections from "../assets/connections/right_connections.json";
+
 var camera = null;
 var showPoseLandmarks = true;
 var showSmoothLandmarks = true;
@@ -129,6 +133,11 @@ export const Home = () => {
 
     // Pushing frame at the end of frameSet array
     if (results.poseLandmarks) {
+      // Disabling face landmarks by setting it's visibility to zero
+      results.poseLandmarks = results.poseLandmarks.map((a, i) =>
+        i < 11 ? { ...a, visibility: 0.0 } : a
+      );
+
       frameSets.push(results.poseLandmarks);
     }
 
@@ -272,22 +281,10 @@ export const Home = () => {
       let leftSideProbability = leftSide / (leftSide + rightSide);
       let rightSideProbability = rightSide / (leftSide + rightSide);
 
-      // If both sides are facing screen, show center
+      // If both sides are facing screen, we need to draw
+
       if (
-        leftSideProbability.toFixed(2) <= 0.52 &&
-        rightSideProbability.toFixed(2) <= 0.52
-      ) {
-        setPoseSide(
-          "CENTER - " +
-            "L: " +
-            leftSideProbability.toFixed(2) +
-            " - R: " +
-            rightSideProbability.toFixed(2)
-        );
-      }
-      // If left side is ahead
-      else if (
-        leftSideProbability.toFixed(2) >= 0.56 &&
+        leftSideProbability.toFixed(2) >= 0.57 &&
         rightSideProbability.toFixed(2) <= 0.52
       ) {
         setPoseSide(
@@ -297,10 +294,28 @@ export const Home = () => {
             " - R: " +
             rightSideProbability.toFixed(2)
         );
+
+        // Draw Landmarks
+        drawConnectors(canvasCtx, results.poseLandmarks, right_connections, {
+          color: "white",
+          lineWidth: 4,
+        });
+        drawLandmarks(
+          canvasCtx,
+          Object.values(POSE.POSE_LANDMARKS_LEFT).map(
+            (index) => results.poseLandmarks[index]
+          ),
+          {
+            visibilityMin: 0.65,
+            color: "white",
+            fillColor: "orange",
+            lineWidth: 3,
+          }
+        );
       }
       // If right side is ahead
       else if (
-        rightSideProbability.toFixed(2) >= 0.56 &&
+        rightSideProbability.toFixed(2) >= 0.57 &&
         leftSideProbability.toFixed(2) <= 0.52
       ) {
         setPoseSide(
@@ -309,6 +324,69 @@ export const Home = () => {
             leftSideProbability.toFixed(2) +
             " - R: " +
             rightSideProbability.toFixed(2)
+        );
+
+        // Draw Landmarks
+        drawConnectors(canvasCtx, results.poseLandmarks, left_connections, {
+          color: "white",
+          lineWidth: 4,
+        });
+        // FACE INLINE POSE POSITIONS
+        drawLandmarks(
+          canvasCtx,
+          Object.values(POSE.POSE_LANDMARKS_RIGHT).map(
+            (index) => results.poseLandmarks[index]
+          ),
+          {
+            visibilityMin: 0.65,
+            color: "white",
+            fillColor: "lightblue",
+            lineWidth: 3,
+          }
+        );
+      } else {
+        setPoseSide(
+          "CENTER - " +
+            "L: " +
+            leftSideProbability.toFixed(2) +
+            " - R: " +
+            rightSideProbability.toFixed(2)
+        );
+
+        // Draw Landmarks
+        drawConnectors(
+          canvasCtx,
+          results.poseLandmarks,
+          POSE.POSE_CONNECTIONS,
+          {
+            color: "white",
+            lineWidth: 4,
+          }
+        );
+        drawLandmarks(
+          canvasCtx,
+          Object.values(POSE.POSE_LANDMARKS_LEFT).map(
+            (index) => results.poseLandmarks[index]
+          ),
+          {
+            visibilityMin: 0.65,
+            color: "white",
+            fillColor: "orange",
+            lineWidth: 3,
+          }
+        );
+        // FACE INLINE POSE POSITIONS
+        drawLandmarks(
+          canvasCtx,
+          Object.values(POSE.POSE_LANDMARKS_RIGHT).map(
+            (index) => results.poseLandmarks[index]
+          ),
+          {
+            visibilityMin: 0.65,
+            color: "white",
+            fillColor: "lightblue",
+            lineWidth: 3,
+          }
         );
       }
 
@@ -324,41 +402,6 @@ export const Home = () => {
       // ) {
       //   setTakeScreenshot(false);
       // }
-
-      // Drawing landmarks
-      if (showPoseLandmarks) {
-        drawConnectors(
-          canvasCtx,
-          results.poseLandmarks,
-          POSE.POSE_CONNECTIONS,
-          { color: "white", lineWidth: 4 }
-        );
-        // FACE INLINE POSE POSITIONS
-        drawLandmarks(
-          canvasCtx,
-          Object.values(POSE.POSE_LANDMARKS_LEFT).map(
-            (index) => results.poseLandmarks[index]
-          ),
-          {
-            visibilityMin: 0.65,
-            color: "white",
-            fillColor: "orange",
-            lineWidth: 3,
-          }
-        );
-        drawLandmarks(
-          canvasCtx,
-          Object.values(POSE.POSE_LANDMARKS_RIGHT).map(
-            (index) => results.poseLandmarks[index]
-          ),
-          {
-            visibilityMin: 0.65,
-            color: "white",
-            fillColor: "lightblue",
-            lineWidth: 3,
-          }
-        );
-      }
 
       // Checking phase and counting the reps
       checkPhase(calculateAngles.knee(joints));
@@ -399,7 +442,6 @@ export const Home = () => {
           fps={fps}
           reps={reps}
           phase={phase}
-          message={message}
         />
 
         <div className="webcam-container">
@@ -425,6 +467,13 @@ export const Home = () => {
             ></canvas>
           )}
         </div>
+
+        {/* Feedback msg */}
+        {message && (
+          <div className="feedback_msg">
+            <p>{message}</p>
+          </div>
+        )}
 
         {/* Control Buttons */}
         <div className="btn-container">
