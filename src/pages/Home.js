@@ -437,7 +437,6 @@ export const Home = () => {
           fps={fps}
           reps={reps}
           phase={phase}
-          message={message}
         />
 
         <div className="webcam-container">
@@ -463,6 +462,13 @@ export const Home = () => {
             ></canvas>
           )}
         </div>
+
+        {/* Feedback msg */}
+        {message && (
+          <div className="feedback_msg">
+            <p>{message}</p>
+          </div>
+        )}
 
         {/* Control Buttons */}
         <div className="btn-container">
