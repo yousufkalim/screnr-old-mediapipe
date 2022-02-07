@@ -1,0 +1,45 @@
+{
+  "1": {
+    "phase": 1,
+    "condition": "4",
+    "color": "red",
+    "angles": {
+      "shoulder": { "name": "shoulder_angle", "sign": "<", "value": 170 }
+    },
+    "message": "keep arms over ears"
+  },
+  "2": {
+    "phase": 1,
+    "condition": "1",
+    "color": "red",
+    "angles": {
+      "shin": { "name": "shin_angle", "sign": "<", "value": 175 },
+      "OAH": { "name": "0AH_angle", "sign": "<", "value": 195 }
+    },
+    "message": "stay on heels"
+  },
+  "3": {
+    "phase": 1,
+    "condition": "1",
+    "color": "red",
+    "angles": {
+      "shin": { "name": "shin_angle", "sign": "<", "value": 150 },
+      "OAH": { "name": "0AH_angle", "sign": ">=", "value": 185 }
+    },
+    "message": "do not let knees pass the toes"
+  },
+  "4": {
+    "phase": 2,
+    "condition": "2",
+    "color": "red",
+    "angles": { "hip": { "name": "hip_angle", "sign": "<", "value": 85 } },
+    "message": "sit hips lower"
+  },
+  "5": {
+    "phase": 2,
+    "condition": "3",
+    "color": "red",
+    "angles": { "spine": { "name": "spine_angle", "sign": "<", "value": 125 } },
+    "message": "keep chest up"
+  }
+}
