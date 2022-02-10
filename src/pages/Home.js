@@ -7,7 +7,7 @@ import * as POSE from "@mediapipe/pose";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { updateLandmarks } from "../utils/updateLandmarks";
 import calculateAngles from "../utils/calculateAngles";
-import checkRules from "../utils/checkRules";
+// import checkRules from "../utils/checkRules";
 import Sidebar from "../components/Sidebar";
 import Loader from "../components/Loader";
 
@@ -35,6 +35,9 @@ var reps = new Array();
 window.camWidth = 1280;
 window.camHeight = 720;
 
+// Rules Data
+var brokenRules = new Array();
+
 // Pose component
 export const Home = () => {
   //Initializing
@@ -43,12 +46,19 @@ export const Home = () => {
   let activeEffect = "mask";
   const [fps, setFps] = useState(0);
   const [poseSide, setPoseSide] = useState("BACK");
-  const [angles, setAngles] = useState({});
+  const [sessionStarted, setSessionStarted] = useState(false);
   let [message, setMessage] = useState("");
   let [loopCounter, setLoopCounter] = useState(0);
   let [takeScreenshot, setTakeScreenshot] = useState(false);
   let [image, setImage] = useState();
   let [phase, setPhase] = useState(0); // We will update this state only to track in useEffect, Cz useEffect cannot track a variable, And we are not gonna use this in rules validation, We will use currentPhase variable there.
+  const [stats, setStats] = useState({
+    joints: {},
+    angles: {},
+    leftSide: 0,
+    rightSide: 0,
+    phase: 0,
+  });
 
   // Initializing the pose component and camera
   useEffect(() => {
@@ -99,6 +109,15 @@ export const Home = () => {
     }, 1000);
   }, []);
 
+  // Check rules
+  useEffect(() => {
+    setInterval(() => {
+      if (sessionStarted) {
+        checkRules();
+      }
+    }, 4000);
+  }, [sessionStarted]);
+
   useEffect(() => {
     if (takeScreenshot) {
       let img = webcamRef.current.getScreenshot();
@@ -117,7 +136,7 @@ export const Home = () => {
 
   // Creating reps with rep details
   useEffect(() => {
-    if (phase === 1 && minAngle < 100) {
+    if (phase === 1 && minAngle < 100 && sessionStarted) {
       let repsCount = reps.length + 1;
       reps.push({ minAngle, maxAngle, repsCount });
       minAngle = 100;
@@ -242,7 +261,10 @@ export const Home = () => {
       // With this function we will convert the landmarks array to an object with joint names
       const joints = updateLandmarks(results.poseLandmarks);
 
-      let calculatedAngles = {
+      // Checking phase and counting the reps
+      checkPhase(calculateAngles.knee(joints));
+
+      let angles = {
         shoulder: calculateAngles.shoulder(joints),
         elbow: calculateAngles.elbow(joints),
         knee: calculateAngles.knee(joints),
@@ -251,8 +273,6 @@ export const Home = () => {
         OAH: calculateAngles.OAH(joints),
         hip: calculateAngles.hip(joints),
       };
-
-      setAngles(calculatedAngles);
 
       // Coords for left side of the body
       let leftSide =
@@ -272,10 +292,16 @@ export const Home = () => {
         joints.knee.right_visibility +
         joints.ankle.right_visibility;
 
+      setStats({
+        joints,
+        angles,
+        leftSide,
+        rightSide,
+        phase: currentPhase,
+      });
+
       // Validate Rules
-      setMessage(
-        checkRules(currentPhase, calculatedAngles, leftSide, rightSide)
-      );
+      checkPose(currentPhase, angles, leftSide, rightSide, setMessage);
 
       // Probability calculation for left and right sides
       let leftSideProbability = leftSide / (leftSide + rightSide);
@@ -402,9 +428,6 @@ export const Home = () => {
       // ) {
       //   setTakeScreenshot(false);
       // }
-
-      // Checking phase and counting the reps
-      checkPhase(calculateAngles.knee(joints));
     }
 
     canvasCtx.restore();
@@ -432,13 +455,134 @@ export const Home = () => {
     }
   };
 
+  /**
+   * With this function we will check the pose of an overhead squat
+   * @param {Number} phase phase can be 1 or 2
+   * @param {Object} angles calculated angles from specific joints
+   * @param {String} poseSide poseSide can be left, center or right
+   * @return {String} error message
+   */
+  const checkPose = (phase, angles, leftSide, rightSide, setMessage) => {
+    // Destructuring angles
+    let { shoulder, shin, OAH, hip, spine } = angles;
+
+    //   If pose side is left then we have to check angles from left side
+    let visibility = leftSide < rightSide ? "right" : "left";
+
+    // Rule 1:  If phase=1 and shoulder_angle < 170, display: "keep arms over ears"
+    if (phase === 1 && shoulder[visibility] < 170) {
+      setMessage("Keep arms over ears");
+    }
+    // Rule 2:  If phase=1 and shin_angle<175 and OAH_angle<195 then display: "stay on heels"
+    else if (phase === 1 && shin[visibility] < 175 && OAH[visibility] < 195) {
+      setMessage("Stay on heels");
+    }
+    //  Rule 3:  If phase=1 and  shin_angle<150 and OAH_angle>=185 then display: "do not let knees pass the toes"
+    else if (phase === 1 && shin[visibility] < 150 && OAH[visibility] >= 185) {
+      setMessage("Do not let knees pass the toes");
+    }
+    // Rule 4:  If phase=2 and hip_angle < 85, display: "sit hips lower"
+    else if (phase === 2 && hip[visibility] < 85) {
+      setMessage("Sit hips lower");
+    }
+    // Rule 5:  If phase=2 and spine_angle < 125, display: "keep chest up"
+    else if (phase === 2 && spine[visibility] < 125) {
+      setMessage("Keep chest up");
+    } else {
+      setMessage("");
+    }
+  };
+
+  /**
+   * With this function we will check the rules of an overhead squat
+   * @param {Number} phase phase can be 1 or 2
+   * @param {Object} angles calculated angles from specific joints
+   * @param {String} poseSide poseSide can be left, center or right
+   * @return {String} error message
+   */
+  const checkRules = () => {
+    // Destructuring angles
+    let { phase, leftSide, rightSide, joints, angles } = stats;
+    let { shoulder, shin, OAH, hip, spine } = angles;
+
+    //   If pose side is left then we have to check angles from left side
+    let visibility = leftSide < rightSide ? "right" : "left";
+
+    // Rule 1:  If phase=1 and shoulder_angle < 170, display: "keep arms over ears"
+    if (phase === 1 && shoulder[visibility] < 170) {
+      brokenRules.push({
+        rule_no: 1,
+        message: "Keep arms over ears",
+        phase: currentPhase,
+        rep_no: reps.length,
+        joints: joints,
+        angles: angles,
+      });
+    }
+    // Rule 2:  If phase=1 and shin_angle<175 and OAH_angle<195 then display: "stay on heels"
+    if (phase === 1 && shin[visibility] < 175 && OAH[visibility] < 195) {
+      brokenRules.push({
+        rule_no: 2,
+        message: "Stay on heels",
+        phase: currentPhase,
+        rep_no: reps.length,
+        joints: joints,
+        angles: angles,
+      });
+    }
+    //  Rule 3:  If phase=1 and  shin_angle<150 and OAH_angle>=185 then display: "do not let knees pass the toes"
+    if (phase === 1 && shin[visibility] < 150 && OAH[visibility] >= 185) {
+      brokenRules.push({
+        rule_no: 3,
+        message: "Do not let knees pass the toes",
+        phase: currentPhase,
+        rep_no: reps.length,
+        joints: joints,
+        angles: angles,
+      });
+    }
+    // Rule 4:  If phase=2 and hip_angle < 85, display: "sit hips lower"
+    if (phase === 2 && hip[visibility] < 85) {
+      brokenRules.push({
+        rule_no: 4,
+        message: "Sit hips lower",
+        phase: currentPhase,
+        rep_no: reps.length,
+        joints: joints,
+        angles: angles,
+      });
+    }
+    // Rule 5:  If phase=2 and spine_angle < 125, display: "keep chest up"
+    if (phase === 2 && spine[visibility] < 125) {
+      brokenRules.push({
+        rule_no: 5,
+        message: "Keep chest up",
+        phase: currentPhase,
+        rep_no: reps.length,
+        joints: joints,
+        angles: angles,
+      });
+    }
+  };
+
+  //  handleSession
+  const handleSession = () => {
+    if (sessionStarted) {
+      setSessionStarted(false);
+      console.log(brokenRules);
+      console.log(reps);
+    } else {
+      setSessionStarted(true);
+    }
+  };
+
   return (
     <center>
       <div className="webcam">
         {/* Sidebar for statistics*/}
         <Sidebar
           poseSide={poseSide}
-          angles={angles}
+          angles={stats.angles}
           fps={fps}
           reps={reps}
           phase={phase}
@@ -487,10 +631,10 @@ export const Home = () => {
 
           <Button
             className="toggle_smooth_btn"
-            onClick={(e) => (showSmoothLandmarks = !showSmoothLandmarks)}
+            onClick={handleSession}
             variant="contained"
           >
-            {showSmoothLandmarks ? "Smooth off" : "Smooth on"}
+            {sessionStarted ? "Session end" : "Session start"}
           </Button>
         </div>
       </div>
